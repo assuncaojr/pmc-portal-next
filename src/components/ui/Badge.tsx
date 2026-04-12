@@ -2,11 +2,11 @@ import { cn } from "@/lib/utils";
 import { HTMLAttributes, forwardRef } from "react";
 
 interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
-  variant?: 'primary' | 'secondary' | 'warning' | 'success' | 'outline';
+  variant?: "primary" | "secondary" | "warning" | "success" | "outline";
 }
 
 const Badge = forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant = 'primary', ...props }, ref) => {
+  ({ className, variant = "primary", ...props }, ref) => {
     const variants = {
       primary: "bg-pmc-primary/10 text-pmc-primary",
       secondary: "bg-pmc-dark/10 text-pmc-dark",
@@ -19,14 +19,14 @@ const Badge = forwardRef<HTMLDivElement, BadgeProps>(
       <div
         ref={ref}
         className={cn(
-          "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold transition-colors",
+          "inline-flex items-center rounded-full px-3 py-1 text-xs font-bold transition-colors",
           variants[variant],
-          className
+          className,
         )}
         {...props}
       />
     );
-  }
+  },
 );
 
 Badge.displayName = "Badge";

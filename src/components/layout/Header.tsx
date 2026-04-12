@@ -20,7 +20,7 @@ export function Header() {
               <div className="flex items-center gap-3">
                  <div className="w-[180px] md:w-[240px]">
                     <img 
-                      src="https://caxias.ma.gov.br/wp-content/themes/2019-2/images/logo.png" 
+                      src={`${process.env.NEXT_PUBLIC_WORDPRESS_URL || ''}/wp-content/themes/2019-2/images/logo.png`}
                       alt="Prefeitura de Caxias" 
                       className="w-full h-auto"
                     />

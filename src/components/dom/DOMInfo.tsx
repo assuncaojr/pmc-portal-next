@@ -18,10 +18,10 @@ export function DOMInfo() {
           As edições do <strong>Diário Oficial do Município</strong> estão
           disponíveis online, por meio do endereço eletrônico:{" "}
           <a
-            href="https://www.caxias.ma.gov.br/dom"
+            href={`${process.env.NEXT_PUBLIC_WORDPRESS_URL || ''}/dom`}
             className="text-pmc-primary underline"
           >
-            https://www.caxias.ma.gov.br/dom
+            {process.env.NEXT_PUBLIC_WORDPRESS_URL || 'https://www.caxias.ma.gov.br'}/dom
           </a>
           . Para realizar pesquisas por termos específicos ou aplicar filtros de
           busca, utilize o campo de pesquisa disponível na mesma página.

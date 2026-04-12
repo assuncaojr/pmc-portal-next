@@ -21,7 +21,7 @@ export default async function DOMPage() {
         <Container>
           {/* Header Section */}
           <div className="mb-12">
-            <Heading underline className="mb-6">
+            <Heading className="mb-6">
               Diário Oficial do Município — DOM
             </Heading>
             <p className="text-gray-600 max-w-5xl leading-relaxed mb-10 italic">
@@ -83,11 +83,19 @@ export default async function DOMPage() {
 
           {/* Pagination Placeholder */}
           <div className="mt-16 flex justify-center space-x-2">
-            <Button variant="ghost" className="bg-gray-100 text-gray-400">
+            <Button
+              size="sm"
+              variant="ghost"
+              className="bg-gray-100 text-gray-400"
+            >
               1
             </Button>
-            <Button variant="primary">2</Button>
-            <Button variant="primary">Próximo »</Button>
+            <Button size="sm" variant="primary">
+              2
+            </Button>
+            <Button size="sm" variant="primary">
+              Próximo »
+            </Button>
           </div>
 
           <DOMInfo />
@@ -99,7 +107,11 @@ export default async function DOMPage() {
   );
 }
 
-function DOMCard({ edition }: { edition: any }) {
+function DOMCard({
+  edition,
+}: {
+  edition: { date_dom: string; slug: string; title: { rendered: string } };
+}) {
   const formattedDate = edition.date_dom
     ? new Date(edition.date_dom + "T00:00:00").toLocaleDateString("pt-BR")
     : "";

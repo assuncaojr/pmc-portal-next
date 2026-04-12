@@ -18,6 +18,12 @@ export interface WordPressPost {
     "wp:featuredmedia"?: Array<{
       source_url: string;
     }>;
+    "wp:term"?: Array<Array<{
+      id: number;
+      name: string;
+      slug: string;
+      taxonomy: string;
+    }>>;
   };
 }
 
@@ -26,21 +32,34 @@ const WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL;
 export async function fetchAPI(query: string): Promise<any> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
 
+  if (!WORDPRESS_URL) {
+    console.error('[WordPress API] ERROR: NEXT_PUBLIC_WORDPRESS_URL is not defined!');
+  }
+
   if (process.env.WORDPRESS_AUTH_REFRESH_TOKEN) {
     headers['Authorization'] = `Bearer ${process.env.WORDPRESS_AUTH_REFRESH_TOKEN}`;
   }
 
-  const res = await fetch(`${WORDPRESS_URL}/wp-json/wp/v2/${query}`, {
-    method: 'GET',
-    headers,
-  });
+  const endpoint = `${WORDPRESS_URL}/wp-json/wp/v2/${query}`;
+  console.log(`[WordPress API] Fetching: ${endpoint}`);
 
-  const json = await res.json();
-  if (json.errors) {
-    console.error(json.errors);
-    throw new Error('Failed to fetch API');
+  try {
+    const res = await fetch(endpoint, {
+      method: 'GET',
+      headers,
+      next: { revalidate: 60 } // Cache de 1 minuto para agilizar
+    });
+
+    const json = await res.json();
+    if (json.errors || json.message) {
+      console.error('[WordPress API] Response Error:', json);
+      return [];
+    }
+    return json;
+  } catch (error: any) {
+    console.error(`[WordPress API] Fetch Failure for ${endpoint}:`, error.message);
+    throw error;
   }
-  return json;
 }
 
 export async function getPostBySlug(slug: string): Promise<WordPressPost | null> {

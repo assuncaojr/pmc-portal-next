@@ -15,8 +15,16 @@ import {
   BadgeInfo,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getAllPosts } from "@/lib/wordpress";
+import { PostCard } from "@/components/ui/PostCard";
 
-export default function Home() {
+export default async function Home() {
+  const posts = await getAllPosts();
+
+  // Pegamos o primeiro post para o destaque e os próximos 4 para o grid lateral
+  const featuredPost = posts[0];
+  const sidebarPosts = posts.slice(1, 5);
+
   return (
     <>
       <Header />
@@ -24,53 +32,77 @@ export default function Home() {
       <main className="grow bg-[#F8FAFC]">
         {/* Modern Hero Grid Section */}
         <section className="py-10 px-4">
-          <div className="container mx-auto max-w-[1240px]">
+          <div className="container mx-auto max-w-container">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Feature Post (Main) */}
               <div className="lg:col-span-7 group">
-                <Link
-                  href="#"
-                  className="block relative overflow-hidden rounded-2xl aspect-[16/10] lg:aspect-auto lg:h-full bg-pmc-dark shadow-xl shadow-blue-900/10"
-                >
-                  <img
-                    src="https://caxias.ma.gov.br/wp-content/uploads/2024/04/premiacao-sebrae.jpg"
-                    alt="Premiacao"
-                    className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 p-8 pt-20 bg-gradient-to-t from-black via-black/60 to-transparent">
-                    <span className="inline-block px-3 py-1 bg-pmc-primary text-[10px] font-bold text-white rounded uppercase tracking-wider mb-4">
-                      # Governo
-                    </span>
-                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-4 group-hover:text-pmc-warning transition-colors">
-                      Prefeitura de Caxias é premiada com o 1º e 3º lugares no
-                      Prêmio Prefeitura Empreendedora do Sebrae
-                    </h2>
-                  </div>
-                </Link>
+                {featuredPost ? (
+                  (() => {
+                    const d = new Date(featuredPost.date);
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, "0");
+                    const day = String(d.getDate()).padStart(2, "0");
+                    const newsHref = `/${year}/${month}/${day}/${featuredPost.slug}`;
+
+                    return (
+                      <Link
+                        href={newsHref}
+                        className="block relative overflow-hidden rounded-2xl aspect-[16/10] lg:aspect-auto lg:h-full bg-pmc-dark shadow-xl shadow-blue-900/10"
+                      >
+                        <img
+                          src={
+                            featuredPost._embedded?.["wp:featuredmedia"]?.[0]
+                              ?.source_url ||
+                            "https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=1000"
+                          }
+                          alt={featuredPost.title.rendered}
+                          className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-x-0 bottom-0 p-8 pt-20 bg-linear-to-t from-black/60 via-black/80 to-black text-left">
+                          <span className="inline-block px-3 py-1 bg-pmc-primary text-[10px] font-bold text-white rounded uppercase tracking-wider mb-4">
+                            # Destaque
+                          </span>
+                          <h2
+                            className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-4 group-hover:text-pmc-warning transition-colors"
+                            dangerouslySetInnerHTML={{
+                              __html: featuredPost.title.rendered,
+                            }}
+                          />
+                        </div>
+                      </Link>
+                    );
+                  })()
+                ) : (
+                  <div className="lg:h-full bg-gray-200 rounded-2xl animate-pulse" />
+                )}
               </div>
 
               {/* Sidebar Post Grid (2x2) */}
               <div className="lg:col-span-5 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <PostCard
-                  tag="Proteção Social"
-                  title="Evento alusivo ao Dia Mundial de Conscientização do Autismo"
-                  image="https://caxias.ma.gov.br/wp-content/uploads/2024/04/autismo-evento.jpg"
-                />
-                <PostCard
-                  tag="Saúde"
-                  title="Treinamentos para aplicação do anticoncepcional Implanon"
-                  image="https://caxias.ma.gov.br/wp-content/uploads/2024/04/saude-treinamento.jpg"
-                />
-                <PostCard
-                  tag="Proteção Social"
-                  title="Projeto Cozinha Comunitária Itinerante é levado a famílias"
-                  image="https://caxias.ma.gov.br/wp-content/uploads/2024/04/cozinha-comunitaria.jpg"
-                />
-                <PostCard
-                  tag="Cultura"
-                  title="Centro de Convivência de Idosos recebe celebração de Páscoa"
-                  image="https://caxias.ma.gov.br/wp-content/uploads/2024/04/idosos-pascoa.jpg"
-                />
+                {sidebarPosts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    title={post.title.rendered}
+                    slug={post.slug}
+                    date={post.date}
+                    image={
+                      post._embedded?.["wp:featuredmedia"]?.[0]?.source_url
+                    }
+                  />
+                ))}
+
+                {/* Fallback if less than 5 posts */}
+                {sidebarPosts.length < 4 &&
+                  Array.from({ length: 4 - sidebarPosts.length }).map(
+                    (_, i) => (
+                      <div
+                        key={`empty-${i}`}
+                        className="aspect-square bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 text-xs font-medium border border-dashed border-gray-300"
+                      >
+                        Espaço reservado para nova notícia
+                      </div>
+                    ),
+                  )}
               </div>
             </div>
           </div>
@@ -78,7 +110,7 @@ export default function Home() {
 
         {/* Links Úteis & Sidebar Section */}
         <section className="py-12 bg-white border-t border-gray-100">
-          <div className="container mx-auto px-4 max-w-[1240px]">
+          <div className="container mx-auto px-4 max-w-container">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
               {/* Links Grid (Left) */}
               <div className="lg:col-span-8">
@@ -93,43 +125,53 @@ export default function Home() {
                   <UsefulLinkCard
                     icon={<FileCheck className="w-6 h-6" />}
                     label="Editais Concurso Público 2025"
+                    href="/editais-concurso-2025"
                   />
                   <UsefulLinkCard
                     icon={<Calculator className="w-6 h-6" />}
                     label="Sistema Tributário Municipal"
                     highlight="novo"
+                    href="https://sefaz.caxias.ma.gov.br/"
                   />
                   <UsefulLinkCard
                     icon={<BadgeInfo className="w-6 h-6" />}
                     label="Portal da Transparência"
+                    href="https://transparencia.caxias.ma.gov.br/"
                   />
                   <UsefulLinkCard
                     icon={<Landmark className="w-6 h-6" />}
                     label="Diário Oficial"
+                    href="/dom"
                   />
                   <UsefulLinkCard
                     icon={<Users className="w-6 h-6" />}
                     label="Servidores"
+                    href="/servidores"
                   />
                   <UsefulLinkCard
                     icon={<FileText className="w-6 h-6" />}
                     label="Contracheque"
+                    href="/contracheque"
                   />
                   <UsefulLinkCard
                     icon={<Gavel className="w-6 h-6" />}
                     label="Licitações"
+                    href="/licitacoes"
                   />
                   <UsefulLinkCard
                     icon={<ShieldCheck className="w-6 h-6" />}
                     label="E-Sic"
+                    href="/e-sic"
                   />
                   <UsefulLinkCard
                     icon={<ScrollText className="w-6 h-6" />}
                     label="NFS-e"
+                    href="https://nfe.caxias.ma.gov.br/"
                   />
                   <UsefulLinkCard
                     icon={<Landmark className="w-6 h-6" />}
                     label="Precatórios do FUNDEF"
+                    href="/fundef"
                   />
                 </div>
               </div>
@@ -152,7 +194,7 @@ export default function Home() {
                   </ul>
 
                   <Link
-                    href="#"
+                    href="/legislacao"
                     className="mt-10 w-full py-4 bg-pmc-primary text-white text-center font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-pmc-primary/90 transition-all shadow-lg shadow-blue-900/20"
                   >
                     <span>Ver toda legislação</span>
@@ -170,56 +212,27 @@ export default function Home() {
   );
 }
 
-function PostCard({
-  tag,
-  title,
-  image,
-}: {
-  tag: string;
-  title: string;
-  image: string;
-}) {
-  return (
-    <Link
-      href="#"
-      className="block group relative overflow-hidden rounded-2xl aspect-square shadow-lg shadow-gray-200/50"
-    >
-      <img
-        src={image}
-        alt={title}
-        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-5 flex flex-col justify-end">
-        <span className="inline-block self-start px-2 py-0.5 bg-pmc-primary text-[9px] font-bold text-white rounded mb-3 uppercase tracking-wider">
-          {tag}
-        </span>
-        <h3 className="text-sm md:text-base font-bold text-white leading-tight group-hover:text-pmc-warning transition-colors line-clamp-3">
-          {title}
-        </h3>
-      </div>
-    </Link>
-  );
-}
-
 function UsefulLinkCard({
   icon,
   label,
+  href = "#",
   highlight,
 }: {
   icon: React.ReactNode;
   label: string;
+  href?: string;
   highlight?: string;
 }) {
   return (
     <Link
-      href="#"
+      href={href}
       className="p-6 bg-white border border-gray-100 rounded-2xl flex items-center gap-5 hover:shadow-xl hover:shadow-blue-900/5 hover:border-pmc-primary/20 transition-all group"
     >
       <div className="text-pmc-primary bg-pmc-primary/5 p-3 rounded-xl group-hover:scale-110 transition-transform">
         {icon}
       </div>
       <div>
-        <p className="font-bold text-pmc-dark text-sm leading-snug group-hover:text-pmc-primary transition-colors">
+        <p className="font-bold text-pmc-dark text-sm leading-snug group-hover:text-pmc-primary transition-colors text-left">
           {label}
           {highlight && (
             <span className="ml-2 text-[10px] bg-blue-100 text-pmc-primary px-1.5 py-0.5 rounded font-black uppercase">

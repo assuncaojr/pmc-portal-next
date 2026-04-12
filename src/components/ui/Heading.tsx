@@ -19,7 +19,7 @@ const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
     },
     ref,
   ) => {
-    const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+    const Tag = `h${level}` as "h1" | "h2" | "h3" | "h4";
 
     const variants = {
       page: "text-4xl md:text-5xl font-black text-pmc-primary uppercase tracking-tight",
@@ -29,17 +29,22 @@ const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
       card: "text-lg md:text-xl font-bold text-pmc-primary group-hover:text-pmc-warning transition-colors",
     };
 
+    const sharedProps = {
+      ref,
+      className: cn(
+        variants[variant],
+        underline && "border-b-4 border-pmc-warning pb-3 inline-block rounded-full",
+        className
+      ),
+      ...props,
+    };
+
+    if (props.dangerouslySetInnerHTML) {
+      return <Tag {...sharedProps} />;
+    }
+
     return (
-      <Tag
-        ref={ref}
-        className={cn(
-          variants[variant],
-          underline &&
-            "border-b-4 border-pmc-warning pb-2 inline-block rounded-full",
-          className,
-        )}
-        {...props}
-      >
+      <Tag {...sharedProps}>
         {children}
         {variant === "section" && underline && (
           <div className="h-1 w-12 bg-pmc-warning mt-2 rounded-full hidden" />
