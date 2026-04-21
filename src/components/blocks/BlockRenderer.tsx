@@ -59,7 +59,7 @@ export function BlockRenderer({ content }: BlockRendererProps) {
             <span className="block my-10 overflow-hidden rounded-2xl shadow-xl transition-all hover:scale-[1.01]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
-                src={src} 
+                src={src || "https://placehold.co/800x600/e2e8f0/475569?text=Sem+Imagem"} 
                 alt={alt || ""} 
                 className={cn("w-full h-auto object-cover", className)} 
                 loading="lazy"

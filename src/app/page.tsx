@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { InstagramFeed } from "@/components/ui/InstagramFeed";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -51,8 +52,8 @@ export default async function Home() {
                       >
                         <img
                           src={
-                            featuredPost._embedded?.["wp:featuredmedia"]?.[0] ||
-                            ""
+                            featuredPost._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
+                            "https://placehold.co/800x600/e2e8f0/475569?text=Sem+Imagem"
                           }
                           alt={featuredPost.title.rendered}
                           className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
@@ -204,6 +205,8 @@ export default async function Home() {
             </div>
           </div>
         </section>
+        
+        <InstagramFeed />
       </main>
 
       <Footer />

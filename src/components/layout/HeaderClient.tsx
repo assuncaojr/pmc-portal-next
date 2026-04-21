@@ -30,6 +30,7 @@ export function HeaderClient({ menuItems }: { menuItems: MenuItem[] }) {
                     width={240}
                     height={80}
                     style={{ width: "100%", height: "auto" }}
+                    unoptimized={true}
                     priority
                   />
                 </div>
@@ -106,7 +107,7 @@ export function HeaderClient({ menuItems }: { menuItems: MenuItem[] }) {
       </div>
 
       {/* Nav Bar (Blue) */}
-      <div className="bg-[#2B59B2] text-white hidden lg:block">
+      <div className="bg-pmc-primary text-white hidden lg:block">
         <Container className="mx-auto flex justify-center px-4">
           <nav className="flex items-center whitespace-nowrap">
             <ul className="flex items-center">

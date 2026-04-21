@@ -54,7 +54,8 @@ export async function fetchAPI(query: string): Promise<any> {
     const res = await fetch(endpoint, {
       method: "GET",
       headers,
-      next: { revalidate: 60 }, // Cache de 1 minuto para agilizar
+      cache: "force-cache",
+      next: { revalidate: 60 },
     });
 
     const json = await res.json();
@@ -105,6 +106,7 @@ export async function fetchAPIWithHeaders(
     const res = await fetch(endpoint, {
       method: "GET",
       headers,
+      cache: "force-cache",
       next: { revalidate: 60 },
     });
     const data = await res.json();
@@ -193,13 +195,65 @@ export interface MenuItem {
 export async function getMenu(slug: string): Promise<MenuItem[]> {
   const url = `${WORDPRESS_URL}/wp-json/portal-next/v1/menu/${slug}`;
   try {
-    const response = await fetch(url, { next: { revalidate: 60 } });
+    const response = await fetch(url, {
+      cache: "force-cache",
+      next: { revalidate: 300 },
+    });
     if (!response.ok) return [];
-    const r = await response.json();
-    console.log({ menu: r });
-    return r;
+    return await response.json();
   } catch (error) {
     console.error(`Error fetching menu ${slug}:`, error);
+    return [];
+  }
+}
+
+export interface InstagramPost {
+  id: string;
+  type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM" | string;
+  images: {
+    thumbnail?: { url: string; width: number; height: number };
+    standard_resolution?: { url: string; width: number; height: number };
+    low_resolution?: { url: string; width: number; height: number };
+  };
+  media_url?: string;
+  link: string;
+  caption?: { text: string } | string | null;
+  timestamp: string;
+}
+
+export function getInstagramImageUrl(post: InstagramPost): string {
+  return (
+    post.images?.standard_resolution?.url ||
+    post.images?.low_resolution?.url ||
+    post.images?.thumbnail?.url ||
+    post.media_url ||
+    "https://placehold.co/640x640/e2e8f0/475569?text=Sem+Imagem"
+  );
+}
+
+export function getInstagramCaptionText(post: InstagramPost): string {
+  if (!post.caption) return "";
+  if (typeof post.caption === "object" && "text" in post.caption) {
+    return post.caption.text ?? "";
+  }
+  return post.caption as string;
+}
+
+export async function getInstagramPosts(): Promise<InstagramPost[]> {
+  const url = `${WORDPRESS_URL}/wp-json/portal-next/v1/instagram`;
+  try {
+    const response = await fetch(url, { cache: "force-cache", next: { revalidate: 3600 } });
+    if (!response.ok) return [];
+    const data = await response.json();
+
+    for (const key in data) {
+      if (key.startsWith("zoom_instagram_is_configured") && data[key]?.data) {
+        return data[key].data as InstagramPost[];
+      }
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching Instagram:", error);
     return [];
   }
 }
