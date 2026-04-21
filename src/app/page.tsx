@@ -19,11 +19,11 @@ import { getAllPosts } from "@/lib/wordpress";
 import { PostCard } from "@/components/ui/PostCard";
 
 export default async function Home() {
-  const posts = await getAllPosts();
+  const { posts } = await getAllPosts(1, 5);
 
   // Pegamos o primeiro post para o destaque e os próximos 4 para o grid lateral
   const featuredPost = posts[0];
-  const sidebarPosts = posts.slice(1, 5);
+  const sidebarPosts = posts?.slice(1, 5);
 
   return (
     <>
@@ -47,13 +47,12 @@ export default async function Home() {
                     return (
                       <Link
                         href={newsHref}
-                        className="block relative overflow-hidden rounded-2xl aspect-[16/10] lg:aspect-auto lg:h-full bg-pmc-dark shadow-xl shadow-blue-900/10"
+                        className="block relative overflow-hidden rounded-2xl aspect-16/10 lg:aspect-auto lg:h-full bg-pmc-dark shadow-xl shadow-blue-900/10"
                       >
                         <img
                           src={
-                            featuredPost._embedded?.["wp:featuredmedia"]?.[0]
-                              ?.source_url ||
-                            "https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=1000"
+                            featuredPost._embedded?.["wp:featuredmedia"]?.[0] ||
+                            ""
                           }
                           alt={featuredPost.title.rendered}
                           className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"

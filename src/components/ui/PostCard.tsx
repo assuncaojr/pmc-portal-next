@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 interface PostCardProps {
   tag?: string;
@@ -36,10 +37,13 @@ export function PostCard({
       href={newsHref}
       className={`block group relative overflow-hidden rounded-2xl aspect-square shadow-lg shadow-gray-200/50 bg-white ${className}`}
     >
-      <img
+      {/* fill requer position:relative no pai — já garantido pelo overflow-hidden */}
+      <Image
         src={displayImage}
-        alt={title}
-        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+        alt={title.replace(/<[^>]*>/g, "")}
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+        className="object-cover group-hover:scale-110 transition-transform duration-500"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-5 flex flex-col justify-end text-left">
         <span className="inline-block self-start px-2 py-0.5 bg-pmc-primary text-[9px] font-bold text-white rounded mb-3 uppercase tracking-wider">

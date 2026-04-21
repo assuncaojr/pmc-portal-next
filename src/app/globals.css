@@ -2,10 +2,10 @@
 
 @theme {
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  
+
   /* Brand Colors */
   --color-pmc-primary: #1e40af; /* Blue-800 */
   --color-pmc-secondary: #1d4ed8; /* Blue-700 */
@@ -15,9 +15,11 @@
 
   /* Semantic UI Tokens */
   --radius-pmc: 1rem;
-  --shadow-pmc: 0 10px 15px -3px rgba(30, 64, 175, 0.1), 0 4px 6px -4px rgba(30, 64, 175, 0.1);
-  --shadow-pmc-xl: 0 20px 25px -5px rgba(30, 64, 175, 0.1), 0 8px 10px -6px rgba(30, 64, 175, 0.1);
-  
+  --shadow-pmc: 0 10px 15px -3px rgba(30, 64, 175, 0.1),
+    0 4px 6px -4px rgba(30, 64, 175, 0.1);
+  --shadow-pmc-xl: 0 20px 25px -5px rgba(30, 64, 175, 0.1),
+    0 8px 10px -6px rgba(30, 64, 175, 0.1);
+
   /* Container Widths */
   --width-container: 1240px;
 }
@@ -36,5 +38,9 @@
 }
 
 /* Custom classes to match WordPress palette names */
-.has-custom-primaria-color { color: #2073E6; }
-.has-custom-primaria-background-color { background-color: #2073E6; }
+.has-custom-primaria-color {
+  color: #2073e6;
+}
+.has-custom-primaria-background-color {
+  background-color: #2073e6;
+}

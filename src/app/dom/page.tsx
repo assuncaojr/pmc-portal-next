@@ -1,17 +1,42 @@
 import { DOMInfo } from "@/components/dom/DOMInfo";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Heading } from "@/components/ui/Heading";
-import { Input } from "@/components/ui/Input";
+import { Pagination } from "@/components/ui/Pagination";
 import { getDOMEditions } from "@/lib/dom";
+import { generatePMCSEO } from "@/lib/seo";
 import { Container } from "@/components/ui/Container";
 import Link from "next/link";
-import { Search, FileText } from "lucide-react";
+import { Search, FileText, Calendar } from "lucide-react";
+import type { Metadata } from "next";
 
-export default async function DOMPage() {
-  const editions = await getDOMEditions();
+export const metadata: Metadata = generatePMCSEO({
+  title: "Diário Oficial do Município — DOM",
+  description:
+    "Consulte as edições do Diário Oficial do Município de Caxias/MA. Publicações de decretos, portarias, licitações e demais atos administrativos.",
+});
+
+interface DOMPageProps {
+  searchParams: Promise<{
+    page?: string;
+    startDate?: string;
+    endDate?: string;
+    q?: string;
+  }>;
+}
+
+export default async function DOMPage({ searchParams }: DOMPageProps) {
+  const { page, startDate, endDate, q } = await searchParams;
+  const currentPage = Math.max(1, Number(page || 1));
+
+  const { editions, totalPages, total } = await getDOMEditions({
+    page: currentPage,
+    perPage: 24,
+    search: q,
+    startDate,
+    endDate,
+  });
 
   return (
     <>
@@ -35,39 +60,103 @@ export default async function DOMPage() {
             </p>
           </div>
 
-          {/* Search Section */}
+          {/* Search / Filter Section */}
           <Card
             hover={false}
             className="bg-pmc-warning/10 border-pmc-warning/20 p-8 mb-12"
           >
             <Heading level={3} variant="section" className="mb-6 text-pmc-dark">
               <Search className="w-5 h-5 text-pmc-primary" />
-              Pesquisa Avançada no Acervo
+              Pesquisa no Acervo
             </Heading>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 items-end">
-              <Input label="Data inicial" type="date" />
-              <Input label="Data final" type="date" />
-              <Input label="Termo ou Edição" placeholder="Ex: 6250" />
-              <Button variant="primary" className="w-full h-12">
-                <Search className="w-5 h-5 mr-2" />
-                <span>PESQUISAR</span>
-              </Button>
-            </div>
+            <form method="GET" action="/dom">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 items-end">
+                {/* Data inicial */}
+                <div>
+                  <label className="block text-sm font-semibold text-pmc-dark mb-1.5">
+                    Data inicial
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="date"
+                      name="startDate"
+                      defaultValue={startDate}
+                      className="w-full pl-9 pr-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-pmc-primary outline-none transition-colors text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Data final */}
+                <div>
+                  <label className="block text-sm font-semibold text-pmc-dark mb-1.5">
+                    Data final
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="date"
+                      name="endDate"
+                      defaultValue={endDate}
+                      className="w-full pl-9 pr-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-pmc-primary outline-none transition-colors text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Busca por termo/edição */}
+                <div>
+                  <label className="block text-sm font-semibold text-pmc-dark mb-1.5">
+                    Termo ou Edição
+                  </label>
+                  <input
+                    type="text"
+                    name="q"
+                    defaultValue={q}
+                    placeholder="Ex: 6250"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-pmc-primary outline-none transition-colors text-sm"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="flex items-center justify-center gap-2 w-full h-11 bg-pmc-primary text-white font-bold rounded-xl hover:bg-pmc-primary/90 transition-colors"
+                >
+                  <Search className="w-4 h-4" />
+                  PESQUISAR
+                </button>
+              </div>
+            </form>
           </Card>
 
-          {/* Grid Section */}
+          {/* Contagem de resultados */}
+          {(q || startDate || endDate) && (
+            <p className="text-sm text-gray-500 mb-6">
+              {total}{" "}
+              {total === 1 ? "edição encontrada" : "edições encontradas"}
+              {q && (
+                <>
+                  {" "}
+                  para <strong>&quot;{q}&quot;</strong>
+                </>
+              )}
+            </p>
+          )}
+
+          {/* Grid de edições */}
           {editions.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {editions.map((edition) => (
-                <DOMCard key={edition.id} edition={edition} />
-              ))}
-            </div>
-          ) : (
-            <div className="py-20 text-center bg-gray-50 rounded-pmc border-2 border-dashed border-gray-200">
-              <div className="text-gray-400 mb-4">
-                <FileText className="w-16 h-16 mx-auto opacity-20" />
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {editions.map((edition) => (
+                  <DOMCard key={edition.id} edition={edition} />
+                ))}
               </div>
+
+              <Pagination currentPage={currentPage} totalPages={totalPages} />
+            </>
+          ) : (
+            <div className="py-20 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+              <FileText className="w-16 h-16 mx-auto opacity-20 text-gray-400 mb-4" />
               <Heading
                 level={3}
                 variant="section"
@@ -75,28 +164,19 @@ export default async function DOMPage() {
               >
                 Nenhuma edição encontrada
               </Heading>
-              <p className="text-gray-400 mt-2">
-                Tente ajustar seus filtros ou verifique se há novas publicações.
+              <p className="text-gray-400 mt-2 text-sm">
+                Tente ajustar os filtros ou verifique se há novas publicações.
               </p>
+              {(q || startDate || endDate) && (
+                <Link
+                  href="/dom"
+                  className="mt-6 inline-flex items-center gap-2 text-pmc-primary font-semibold text-sm hover:underline"
+                >
+                  Limpar filtros
+                </Link>
+              )}
             </div>
           )}
-
-          {/* Pagination Placeholder */}
-          <div className="mt-16 flex justify-center space-x-2">
-            <Button
-              size="sm"
-              variant="ghost"
-              className="bg-gray-100 text-gray-400"
-            >
-              1
-            </Button>
-            <Button size="sm" variant="primary">
-              2
-            </Button>
-            <Button size="sm" variant="primary">
-              Próximo »
-            </Button>
-          </div>
 
           <DOMInfo />
         </Container>
@@ -118,7 +198,7 @@ function DOMCard({
 
   return (
     <Link href={`/dom/${edition.slug}`}>
-      <Card className="flex flex-col h-full bg-pmc-light/30">
+      <Card className="flex flex-col h-full bg-pmc-light/30 hover:shadow-lg transition-shadow">
         <div className="flex justify-between items-start mb-4">
           <div className="p-3 bg-white rounded-xl shadow-sm border border-gray-100 text-pmc-primary">
             <FileText className="w-6 h-6" />
