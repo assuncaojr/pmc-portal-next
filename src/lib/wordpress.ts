@@ -129,7 +129,7 @@ export async function getAllPosts(
   perPage = 12,
 ): Promise<WordPressPage> {
   const { data, headers } = await fetchAPIWithHeaders(
-    `posts?_embed&page=${page}&per_page=${perPage}`,
+    `posts?_embed&page=${page}&per_page=${perPage}&type=post`,
   );
   return {
     posts: data,
@@ -242,7 +242,10 @@ export function getInstagramCaptionText(post: InstagramPost): string {
 export async function getInstagramPosts(): Promise<InstagramPost[]> {
   const url = `${WORDPRESS_URL}/wp-json/portal-next/v1/instagram`;
   try {
-    const response = await fetch(url, { cache: "force-cache", next: { revalidate: 3600 } });
+    const response = await fetch(url, {
+      cache: "force-cache",
+      next: { revalidate: 3600 },
+    });
     if (!response.ok) return [];
     const data = await response.json();
 
