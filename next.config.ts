@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
         hostname: "caxias.ma.gov.br",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "placehold.co",
+        pathname: "/**",
+      },
     ],
   },
   logging: false,

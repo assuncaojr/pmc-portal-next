@@ -15,18 +15,20 @@ import {
   ScrollText,
   BadgeInfo,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, shouldUnoptimizeImage } from "@/lib/utils";
 import { getAllPosts, getPostsByTagSlug } from "@/lib/wordpress";
+import Image from "next/image";
 import { PostCard } from "@/components/ui/PostCard";
 import { VideoCarousel } from "@/components/ui/VideoCarousel";
 
 export default async function Home() {
-  const { posts } = await getAllPosts(1, 5);
+  const { posts: allPosts } = await getAllPosts(1, 13);
   const { posts: videoPosts } = await getPostsByTagSlug("video", 1, 10);
 
   // Pegamos o primeiro post para o destaque e os próximos 4 para o grid lateral
-  const featuredPost = posts[0];
-  const sidebarPosts = posts?.slice(1, 5);
+  const featuredPost = allPosts[0];
+  const sidebarPosts = allPosts?.slice(1, 5);
+  const latestNews = allPosts?.slice(5);
 
   return (
     <>
@@ -112,106 +114,186 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Links Úteis & Sidebar Section */}
+        <InstagramFeed />
+
+        {/* Últimas Notícias & Sidebar */}
         <section className="py-12 bg-white border-t border-gray-100">
           <div className="container mx-auto px-4 max-w-container">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-              {/* Links Grid (Left) */}
+              {/* Últimas Notícias (Left - 8 columns) */}
               <div className="lg:col-span-8">
                 <div className="flex items-center space-x-3 mb-10">
                   <div className="w-1.5 h-8 bg-pmc-primary rounded-full"></div>
                   <h2 className="text-3xl font-black text-pmc-dark uppercase tracking-tight">
-                    Links Úteis
+                    Últimas Notícias
                   </h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <UsefulLinkCard
-                    icon={<FileCheck className="w-6 h-6" />}
-                    label="Editais Concurso Público 2025"
-                    href="/editais-concurso-2025"
-                  />
-                  <UsefulLinkCard
-                    icon={<Calculator className="w-6 h-6" />}
-                    label="Sistema Tributário Municipal"
-                    highlight="novo"
-                    href="https://sefaz.caxias.ma.gov.br/"
-                  />
-                  <UsefulLinkCard
-                    icon={<BadgeInfo className="w-6 h-6" />}
-                    label="Portal da Transparência"
-                    href="https://transparencia.caxias.ma.gov.br/"
-                  />
-                  <UsefulLinkCard
-                    icon={<Landmark className="w-6 h-6" />}
-                    label="Diário Oficial"
-                    href="/dom"
-                  />
-                  <UsefulLinkCard
-                    icon={<Users className="w-6 h-6" />}
-                    label="Servidores"
-                    href="/servidores"
-                  />
-                  <UsefulLinkCard
-                    icon={<FileText className="w-6 h-6" />}
-                    label="Contracheque"
-                    href="/contracheque"
-                  />
-                  <UsefulLinkCard
-                    icon={<Gavel className="w-6 h-6" />}
-                    label="Licitações"
-                    href="/licitacoes"
-                  />
-                  <UsefulLinkCard
-                    icon={<ShieldCheck className="w-6 h-6" />}
-                    label="E-Sic"
-                    href="/e-sic"
-                  />
-                  <UsefulLinkCard
-                    icon={<ScrollText className="w-6 h-6" />}
-                    label="NFS-e"
-                    href="https://nfe.caxias.ma.gov.br/"
-                  />
-                  <UsefulLinkCard
-                    icon={<Landmark className="w-6 h-6" />}
-                    label="Precatórios do FUNDEF"
-                    href="/fundef"
-                  />
+                <div className="divide-y divide-gray-100">
+                  {latestNews.map((post) => {
+                    const category =
+                      post._embedded?.["wp:term"]?.[0]?.[0]?.name || "Notícia";
+                    const imageUrl =
+                      post._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
+                      "https://placehold.co/400x300?text=Sem+Imagem";
+
+                    const d = new Date(post.date);
+                    const formattedDate = d.toLocaleDateString("pt-BR", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    });
+
+                    // URL amigável
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, "0");
+                    const day = String(d.getDate()).padStart(2, "0");
+                    const newsHref = `/${year}/${month}/${day}/${post.slug}`;
+
+                    return (
+                      <Link
+                        key={post.id}
+                        href={newsHref}
+                        className="flex flex-col md:flex-row gap-6 py-8 group transition-all"
+                      >
+                        <div className="w-full md:w-64 h-44 shrink-0 relative overflow-hidden rounded-2xl shadow-md">
+                          <Image
+                            src={imageUrl}
+                            alt={post.title.rendered}
+                            fill
+                            unoptimized={shouldUnoptimizeImage(imageUrl)}
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                        <div className="flex flex-col justify-center">
+                          <span className="inline-block self-start px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-black rounded uppercase tracking-wider mb-3">
+                            {category}
+                          </span>
+                          <h3
+                            className="text-xl md:text-2xl font-black text-pmc-dark leading-tight group-hover:text-pmc-primary transition-colors mb-3 line-clamp-2"
+                            dangerouslySetInnerHTML={{
+                              __html: post.title.rendered,
+                            }}
+                          />
+                          <p className="text-sm text-gray-500 font-medium">
+                            {formattedDate}
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-12 text-center">
+                  <Link
+                    href="/noticias"
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-gray-100 hover:bg-gray-200 text-pmc-dark font-bold rounded-2xl transition-all"
+                  >
+                    <span>Ver todas as notícias</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
                 </div>
               </div>
 
-              {/* Sidebar Law Box (Right) */}
+              {/* Sidebar (Right - 4 columns) */}
               <div className="lg:col-span-4">
-                <div className="bg-[#94A3B8]/20 rounded-2xl p-8 border border-gray-200/50">
-                  <h3 className="text-2xl font-black text-pmc-dark mb-8 uppercase tracking-tight flex items-center gap-3">
-                    <BookOpen className="w-6 h-6 text-pmc-primary" />
-                    <span>Leis e Códigos</span>
-                  </h3>
-                  <ul className="space-y-4">
-                    <LawLink label="Conselho Tutelar" />
-                    <LawLink label="Lei 2.156/2014 - Concursos" highlight />
-                    <LawLink label="Lei 2.113/2013 - Controle de Animais" />
-                    <LawLink label="Código Tributário (download)" />
-                    <LawLink label="Código de Postura (download)" />
-                    <LawLink label="Código de Meio-ambiente (download)" />
-                    <LawLink label="Plano Diretor (download)" />
-                  </ul>
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 sticky top-24">
+                  {/* Acesso Rápido */}
+                  <div className="mb-12">
+                    <div className="flex items-center space-x-3 mb-8">
+                      <div className="w-1.5 h-6 bg-pmc-primary rounded-full"></div>
+                      <h2 className="text-xl font-black text-pmc-dark uppercase tracking-tight">
+                        Acesso Rápido
+                      </h2>
+                    </div>
 
-                  <Link
-                    href="/legislacao"
-                    className="mt-10 w-full py-4 bg-pmc-primary text-white text-center font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-pmc-primary/90 transition-all shadow-lg shadow-blue-900/20"
-                  >
-                    <span>Ver toda legislação</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                    <div className="space-y-1">
+                      <QuickLink
+                        icon={<FileCheck className="w-5 h-5" />}
+                        label="Edital Concurso Público 2025"
+                        href="/editais-concurso-2025"
+                      />
+                      <QuickLink
+                        icon={<Calculator className="w-5 h-5" />}
+                        label="Sistema Tributário Municipal"
+                        href="https://sefaz.caxias.ma.gov.br/"
+                      />
+                      <QuickLink
+                        icon={<ShieldCheck className="w-5 h-5" />}
+                        label="Portal da Transparência"
+                        href="https://transparencia.caxias.ma.gov.br/"
+                      />
+                      <QuickLink
+                        icon={<Landmark className="w-5 h-5" />}
+                        label="Diário Oficial (DOM)"
+                        href="/dom"
+                      />
+                      <QuickLink
+                        icon={<Users className="w-5 h-5" />}
+                        label="Portal do Servidor"
+                        href="/servidores"
+                      />
+                      <QuickLink
+                        icon={<FileText className="w-5 h-5" />}
+                        label="Contracheque Online"
+                        href="/contracheque"
+                      />
+                      <QuickLink
+                        icon={<Gavel className="w-5 h-5" />}
+                        label="Licitações e Contratos"
+                        href="/licitacoes"
+                      />
+                      <QuickLink
+                        icon={<BadgeInfo className="w-5 h-5" />}
+                        label="E-Sic / Ouvidoria"
+                        href="/e-sic"
+                      />
+                      <QuickLink
+                        icon={<ScrollText className="w-5 h-5" />}
+                        label="NFS-e (Nota Fiscal)"
+                        href="https://nfe.caxias.ma.gov.br/"
+                      />
+                      <QuickLink
+                        icon={<Landmark className="w-5 h-5" />}
+                        label="Precatórios do FUNDEF"
+                        href="/fundef"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-gray-100 my-8"></div>
+
+                  {/* Leis e Códigos */}
+                  <div>
+                    <h3 className="text-xl font-black text-pmc-dark mb-8 uppercase tracking-tight flex items-center gap-3">
+                      <BookOpen className="w-5 h-5 text-pmc-primary" />
+                      <span>Leis e Códigos</span>
+                    </h3>
+                    <ul className="space-y-4 mb-10">
+                      <LawLink label="Conselho Tutelar" />
+                      <LawLink label="Lei 2.156/2014 - Concursos" highlight />
+                      <LawLink label="Lei 2.113/2013 - Controle de Animais" />
+                      <LawLink label="Código Tributário (download)" />
+                      <LawLink label="Código de Postura (download)" />
+                      <LawLink label="Código de Meio-ambiente (download)" />
+                      <LawLink label="Plano Diretor (download)" />
+                    </ul>
+
+                    <Link
+                      href="/legislacao"
+                      className="w-full py-4 bg-pmc-primary text-white text-center font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-pmc-primary/90 transition-all shadow-lg shadow-blue-900/20"
+                    >
+                      <span>Ver toda legislação</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
-        {videoPosts.length > 0 && <VideoCarousel posts={videoPosts} />}
 
-        <InstagramFeed />
+        {videoPosts.length > 0 && <VideoCarousel posts={videoPosts} />}
       </main>
 
       <Footer />
@@ -219,35 +301,26 @@ export default async function Home() {
   );
 }
 
-function UsefulLinkCard({
+function QuickLink({
   icon,
   label,
-  href = "#",
-  highlight,
+  href,
 }: {
   icon: React.ReactNode;
   label: string;
-  href?: string;
-  highlight?: string;
+  href: string;
 }) {
   return (
     <Link
       href={href}
-      className="p-6 bg-white border border-gray-100 rounded-2xl flex items-center gap-5 hover:shadow-xl hover:shadow-blue-900/5 hover:border-pmc-primary/20 transition-all group"
+      className="flex items-center gap-4 py-3 group hover:translate-x-1 transition-transform border-b border-gray-50 last:border-0"
     >
-      <div className="text-pmc-primary bg-pmc-primary/5 p-3 rounded-xl group-hover:scale-110 transition-transform">
+      <div className="text-blue-600 bg-blue-50 p-2 rounded-lg group-hover:bg-pmc-primary group-hover:text-white transition-all">
         {icon}
       </div>
-      <div>
-        <p className="font-bold text-pmc-dark text-sm leading-snug group-hover:text-pmc-primary transition-colors text-left">
-          {label}
-          {highlight && (
-            <span className="ml-2 text-[10px] bg-blue-100 text-pmc-primary px-1.5 py-0.5 rounded font-black uppercase">
-              {highlight}
-            </span>
-          )}
-        </p>
-      </div>
+      <span className="text-sm font-bold text-gray-700 group-hover:text-pmc-primary transition-colors">
+        {label}
+      </span>
     </Link>
   );
 }
