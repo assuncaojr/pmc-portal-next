@@ -175,6 +175,7 @@ export async function getPostsByTag(
   const { data, headers } = await fetchAPIWithHeaders(
     `posts?tags=${tagId}&_embed&page=${page}&per_page=${perPage}`,
   );
+
   return {
     posts: data,
     totalPages: Number(headers.get("X-WP-TotalPages") || 1),
@@ -259,4 +260,14 @@ export async function getInstagramPosts(): Promise<InstagramPost[]> {
     console.error("Error fetching Instagram:", error);
     return [];
   }
+}
+
+export async function getPostsByTagSlug(
+  slug: string,
+  page = 1,
+  perPage = 12,
+): Promise<WordPressPage> {
+  const tag = await getTagBySlug(slug);
+  if (!tag) return { posts: [], totalPages: 0, total: 0 };
+  return getPostsByTag(tag.id, page, perPage);
 }

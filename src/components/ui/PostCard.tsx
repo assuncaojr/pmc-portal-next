@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { shouldUnoptimizeImage } from "@/lib/utils";
 
 interface PostCardProps {
   tag?: string;
@@ -42,6 +43,7 @@ export function PostCard({
         src={displayImage}
         alt={title.replace(/<[^>]*>/g, "")}
         fill
+        unoptimized={shouldUnoptimizeImage(displayImage)}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
         className="object-cover group-hover:scale-110 transition-transform duration-500"
       />

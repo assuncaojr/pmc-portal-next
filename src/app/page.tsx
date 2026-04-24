@@ -16,11 +16,13 @@ import {
   BadgeInfo,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getAllPosts } from "@/lib/wordpress";
+import { getAllPosts, getPostsByTagSlug } from "@/lib/wordpress";
 import { PostCard } from "@/components/ui/PostCard";
+import { VideoCarousel } from "@/components/ui/VideoCarousel";
 
 export default async function Home() {
   const { posts } = await getAllPosts(1, 5);
+  const { posts: videoPosts } = await getPostsByTagSlug("video", 1, 10);
 
   // Pegamos o primeiro post para o destaque e os próximos 4 para o grid lateral
   const featuredPost = posts[0];
@@ -50,9 +52,11 @@ export default async function Home() {
                         href={newsHref}
                         className="block relative overflow-hidden rounded-2xl aspect-16/10 lg:aspect-auto lg:h-full bg-pmc-dark shadow-xl shadow-blue-900/10"
                       >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={
-                            featuredPost._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
+                            featuredPost._embedded?.["wp:featuredmedia"]?.[0]
+                              ?.source_url ||
                             "https://placehold.co/800x600/e2e8f0/475569?text=Sem+Imagem"
                           }
                           alt={featuredPost.title.rendered}
@@ -205,7 +209,8 @@ export default async function Home() {
             </div>
           </div>
         </section>
-        
+        {videoPosts.length > 0 && <VideoCarousel posts={videoPosts} />}
+
         <InstagramFeed />
       </main>
 

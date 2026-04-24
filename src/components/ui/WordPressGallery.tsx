@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { ImageLightbox } from "./ImageLightbox";
-import { cn } from "@/lib/utils";
+import { cn, shouldUnoptimizeImage } from "@/lib/utils";
+import Image from "next/image";
 
 interface GalleryImage {
   src: string;
@@ -37,9 +38,11 @@ export function WordPressGallery({ images, columns = 3 }: WordPressGalleryProps)
             className="relative aspect-square overflow-hidden rounded-2xl group cursor-pointer shadow-md hover:shadow-xl transition-all hover:scale-[1.02]"
             onClick={() => setLightboxIndex(index)}
           >
-            <img
+            <Image
               src={image.src}
               alt={image.alt}
+              fill
+              unoptimized={shouldUnoptimizeImage(image.src)}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-pmc-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
