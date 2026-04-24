@@ -36,7 +36,7 @@ export default async function Home() {
 
       <main className="grow bg-[#F8FAFC]">
         {/* Modern Hero Grid Section */}
-        <section className="py-10 px-4">
+        <section className="py-16 md:py-24 px-4">
           <div className="container mx-auto max-w-container">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Feature Post (Main) */}
@@ -45,31 +45,38 @@ export default async function Home() {
                   (() => {
                     const d = new Date(featuredPost.date);
                     const year = d.getFullYear();
-                    const month = String(d.getMonth() + 1).padStart(2, "0");
                     const day = String(d.getDate()).padStart(2, "0");
+                    const month = String(d.getMonth() + 1).padStart(2, "0");
                     const newsHref = `/${year}/${month}/${day}/${featuredPost.slug}`;
+                    const imageUrl =
+                      featuredPost._embedded?.["wp:featuredmedia"]?.[0]
+                        ?.source_url ||
+                      "https://placehold.co/800x600/e2e8f0/475569?text=Sem+Imagem";
+                    const tag =
+                      featuredPost._embedded?.["wp:term"]?.[0]?.[0]?.name ||
+                      "Governo";
 
                     return (
                       <Link
                         href={newsHref}
-                        className="block relative overflow-hidden rounded-2xl aspect-16/10 lg:aspect-auto lg:h-full bg-pmc-dark shadow-xl shadow-blue-900/10"
+                        className="block h-full bg-white rounded-4xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100"
                       >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={
-                            featuredPost._embedded?.["wp:featuredmedia"]?.[0]
-                              ?.source_url ||
-                            "https://placehold.co/800x600/e2e8f0/475569?text=Sem+Imagem"
-                          }
-                          alt={featuredPost.title.rendered}
-                          className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
-                        />
-                        <div className="absolute inset-x-0 bottom-0 p-8 pt-20 bg-linear-to-t from-black/60 via-black/80 to-black text-left">
-                          <span className="inline-block px-3 py-1 bg-pmc-primary text-[10px] font-bold text-white rounded uppercase tracking-wider mb-4">
-                            # Destaque
+                        <div className="relative aspect-video overflow-hidden">
+                          <Image
+                            src={imageUrl}
+                            alt={featuredPost.title.rendered}
+                            fill
+                            priority
+                            unoptimized={shouldUnoptimizeImage(imageUrl)}
+                            className="object-cover group-hover:scale-105 transition-transform duration-700"
+                          />
+                        </div>
+                        <div className="p-6 md:p-8">
+                          <span className="inline-block px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black rounded uppercase tracking-widest mb-3">
+                            {tag}
                           </span>
                           <h2
-                            className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-4 group-hover:text-pmc-warning transition-colors"
+                            className="text-2xl md:text-3xl font-black text-pmc-dark leading-tight group-hover:text-pmc-primary transition-colors line-clamp-3"
                             dangerouslySetInnerHTML={{
                               __html: featuredPost.title.rendered,
                             }}
@@ -79,7 +86,7 @@ export default async function Home() {
                     );
                   })()
                 ) : (
-                  <div className="lg:h-full bg-gray-200 rounded-2xl animate-pulse" />
+                  <div className="lg:h-full bg-gray-200 rounded-[32px] animate-pulse" />
                 )}
               </div>
 
@@ -94,6 +101,7 @@ export default async function Home() {
                     image={
                       post._embedded?.["wp:featuredmedia"]?.[0]?.source_url
                     }
+                    tag={post._embedded?.["wp:term"]?.[0]?.[0]?.name}
                   />
                 ))}
 
@@ -103,9 +111,9 @@ export default async function Home() {
                     (_, i) => (
                       <div
                         key={`empty-${i}`}
-                        className="aspect-square bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 text-xs font-medium border border-dashed border-gray-300"
+                        className="aspect-[16/10] bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 text-xs font-medium border border-dashed border-gray-300"
                       >
-                        Espaço reservado para nova notícia
+                        Espaço reservado
                       </div>
                     ),
                   )}
@@ -117,7 +125,7 @@ export default async function Home() {
         <InstagramFeed />
 
         {/* Últimas Notícias & Sidebar */}
-        <section className="py-12 bg-white border-t border-gray-100">
+        <section className="py-16 md:py-24 bg-white border-t border-gray-100">
           <div className="container mx-auto px-4 max-w-container">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
               {/* Últimas Notícias (Left - 8 columns) */}

@@ -15,7 +15,7 @@ export async function InstagramFeed() {
   const recentPosts = posts.slice(0, 6);
 
   return (
-    <section className="pt-4 pb-12 bg-white">
+    <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4 max-w-container">
         <div className="flex flex-col items-center mb-10 text-center">
           <div className="flex items-center gap-3 mb-2">

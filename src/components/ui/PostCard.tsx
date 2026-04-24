@@ -36,23 +36,24 @@ export function PostCard({
   return (
     <Link
       href={newsHref}
-      className={`block group relative overflow-hidden rounded-2xl aspect-square shadow-lg shadow-gray-200/50 bg-white ${className}`}
+      className={`block group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 ${className}`}
     >
-      {/* fill requer position:relative no pai — já garantido pelo overflow-hidden */}
-      <Image
-        src={displayImage}
-        alt={title.replace(/<[^>]*>/g, "")}
-        fill
-        unoptimized={shouldUnoptimizeImage(displayImage)}
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-        className="object-cover group-hover:scale-110 transition-transform duration-500"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-5 flex flex-col justify-end text-left">
-        <span className="inline-block self-start px-2 py-0.5 bg-pmc-primary text-[9px] font-bold text-white rounded mb-3 uppercase tracking-wider">
+      <div className="relative aspect-video overflow-hidden">
+        <Image
+          src={displayImage}
+          alt={title.replace(/<[^>]*>/g, "")}
+          fill
+          unoptimized={shouldUnoptimizeImage(displayImage)}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      </div>
+      <div className="p-4">
+        <span className="inline-block self-start px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-black rounded mb-2 uppercase tracking-wider">
           {tag}
         </span>
         <h3 
-          className="text-sm md:text-base font-bold text-white leading-tight group-hover:text-pmc-warning transition-colors line-clamp-3"
+          className="text-sm md:text-base font-black text-pmc-dark leading-snug group-hover:text-pmc-primary transition-colors line-clamp-2"
           dangerouslySetInnerHTML={{ __html: title }}
         />
       </div>
