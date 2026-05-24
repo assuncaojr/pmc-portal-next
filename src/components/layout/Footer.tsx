@@ -1,89 +1,117 @@
 import Link from "next/link";
-import { MapPin, Phone, Mail } from "lucide-react";
-import { Facebook, Instagram, Twitter, Youtube } from "@/components/ui/SocialIcons";
+import { Facebook, Instagram, Youtube } from "@/components/ui/SocialIcons";
+import Image from "next/image";
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
-
   return (
-    <footer className="bg-pmc-dark text-white pt-16 pb-8">
-      <div className="container mx-auto px-4">
+    <footer className="bg-pmc-primary text-white">
+      <div className="container mx-auto px-4 max-w-container pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {/* PMC Info */}
+          {/* Column 1: Logo */}
           <div className="space-y-6">
-            <div className="flex items-center space-x-3">
-              <div className="bg-white p-2 rounded-lg">
-                <span className="text-pmc-primary font-bold text-xl tracking-tighter">PMC</span>
-              </div>
-              <span className="font-bold uppercase tracking-wide">Prefeitura de Caxias</span>
-            </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Trabalhando para transformar Caxias na cidade que todos nós sonhamos. Transparência, inovação e compromisso com o cidadão.
+            <Image
+              src="/logo-caxias-negativo.png"
+              alt="Prefeitura de Caxias"
+              width={340}
+              height={120}
+              className="h-42 w-auto"
+              unoptimized={true}
+            />
+          </div>
+
+          {/* Column 2: Contato */}
+          <div>
+            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+              <span className="w-1 h-6 bg-white/30 rounded-full"></span>
+              Contato
+            </h3>
+            <ul className="space-y-4 text-white/80 text-sm">
+              <li>Praça Dias Carneiro, 600, Centro</li>
+              <li>CEP: 65.604-090 — Caxias / MA</li>
+              <li className="pt-2">(99) 2221-0011 - 2221-0012</li>
+              <li>sec.comunicacao@caxias.ma.gov.br</li>
+              <li className="pt-2 opacity-60">Seg a Sex: 7h30 às 13h30</li>
+            </ul>
+          </div>
+
+          {/* Column 3: Links Rápidos */}
+          <div>
+            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+              <span className="w-1 h-6 bg-white/30 rounded-full"></span>
+              Links Rápidos
+            </h3>
+            <ul className="space-y-3 text-white/80 text-sm">
+              <li>
+                <Link href="#" className="hover:text-white transition-colors">
+                  Portal da Transparência
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dom"
+                  className="hover:text-white transition-colors"
+                >
+                  Diário Oficial
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="hover:text-white transition-colors">
+                  Licitações
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="hover:text-white transition-colors">
+                  Webmail
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="hover:text-white transition-colors">
+                  Ouvidoria (E-Sic)
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="hover:text-white transition-colors">
+                  Mapa do Site
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Redes Sociais */}
+          <div>
+            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+              <span className="w-1 h-6 bg-white/30 rounded-full"></span>
+              Redes Sociais
+            </h3>
+            <p className="text-white/70 text-sm mb-6 leading-relaxed">
+              Siga-nos e fique por dentro de tudo que acontece em Caxias.
             </p>
-            <div className="flex space-x-4">
-              <a href="#" className="p-2 bg-white/5 hover:bg-pmc-primary rounded-full transition-all duration-300">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="p-2 bg-white/5 hover:bg-pmc-primary rounded-full transition-all duration-300">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="p-2 bg-white/5 hover:bg-pmc-primary rounded-full transition-all duration-300">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="p-2 bg-white/5 hover:bg-pmc-primary rounded-full transition-all duration-300">
-                <Youtube className="w-5 h-5" />
-              </a>
+            <div className="flex gap-3">
+              {[
+                { Icon: Instagram, href: "#" },
+                { Icon: Facebook, href: "#" },
+                { Icon: Youtube, href: "#" },
+              ].map(({ Icon, href }, idx) => (
+                <a
+                  key={idx}
+                  href={href}
+                  className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-lg hover:bg-white/20 transition-all border border-white/10"
+                >
+                  <Icon className="w-5 h-5" />
+                </a>
+              ))}
             </div>
-          </div>
-
-          {/* Useful Links */}
-          <div>
-            <h3 className="text-lg font-bold mb-6 border-l-4 border-pmc-primary pl-4 uppercase tracking-wider">Acesso Rápido</h3>
-            <ul className="space-y-4 text-gray-400">
-              <li><Link href="/dom" className="hover:text-white transition-colors">Diário Oficial</Link></li>
-              <li><Link href="/transparencia" className="hover:text-white transition-colors">Portal da Transparência</Link></li>
-              <li><Link href="/servicos" className="hover:text-white transition-colors">Carta de Serviços</Link></li>
-              <li><Link href="/noticias" className="hover:text-white transition-colors">Sala de Imprensa</Link></li>
-              <li><Link href="/concursos" className="hover:text-white transition-colors">Concursos e Seletivos</Link></li>
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h3 className="text-lg font-bold mb-6 border-l-4 border-pmc-primary pl-4 uppercase tracking-wider">Contato</h3>
-            <ul className="space-y-4 text-gray-400">
-              <li className="flex items-start space-x-3">
-                <MapPin className="w-5 h-5 text-pmc-primary shrink-0" />
-                <span className="text-sm">Praça Cândido Mendes, s/n - Centro, Caxias - MA, 65600-000</span>
-              </li>
-              <li className="flex items-center space-x-3">
-                <Phone className="w-5 h-5 text-pmc-primary shrink-0" />
-                <span className="text-sm">(99) 3521-3000</span>
-              </li>
-              <li className="flex items-center space-x-3">
-                <Mail className="w-5 h-5 text-pmc-primary shrink-0" />
-                <span className="text-sm">contato@caxias.ma.gov.br</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Gov Links */}
-          <div>
-            <h3 className="text-lg font-bold mb-6 border-l-4 border-pmc-primary pl-4 uppercase tracking-wider">Governo</h3>
-            <ul className="space-y-4 text-gray-400">
-              <li><a href="https://www.ma.gov.br" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Governo do Maranhão</a></li>
-              <li><a href="https://www.gov.br" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Governo Federal</a></li>
-              <li><a href="https://www.famem.org.br" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">FAMEM</a></li>
-            </ul>
           </div>
         </div>
+      </div>
 
-        <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 gap-4">
-          <p>© {currentYear} Prefeitura Municipal de Caxias - Todos os direitos reservados.</p>
-          <div className="flex space-x-6">
-            <Link href="/privacidade" className="hover:text-white">Políticas de Privacidade</Link>
-            <Link href="/termos" className="hover:text-white">Termos de Uso</Link>
-          </div>
+      {/* Bottom Bar */}
+      <div className="py-6 border-t border-white/5">
+        <div className="container mx-auto px-4 max-w-container flex justify-center">
+          <p className="text-xs text-white/40 font-medium text-center">
+            © {new Date().getFullYear()} Prefeitura Municipal de Caxias — Todos
+            os direitos reservados.
+          </p>
         </div>
       </div>
     </footer>

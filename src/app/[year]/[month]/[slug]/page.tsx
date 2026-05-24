@@ -16,7 +16,6 @@ interface PostPageProps {
   params: Promise<{
     year: string;
     month: string;
-    day: string;
     slug: string;
   }>;
 }
@@ -25,7 +24,7 @@ export async function generateMetadata({
   params,
 }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const post = await getPostBySlug(decodeURIComponent(slug));
 
   if (!post) return generatePMCSEO({ title: "Não Encontrado" });
 
@@ -38,7 +37,7 @@ export async function generateMetadata({
 
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const post = await getPostBySlug(decodeURIComponent(slug));
 
   if (!post) notFound();
 

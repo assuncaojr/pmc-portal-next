@@ -45,9 +45,8 @@ export default async function Home() {
                   (() => {
                     const d = new Date(featuredPost.date);
                     const year = d.getFullYear();
-                    const day = String(d.getDate()).padStart(2, "0");
                     const month = String(d.getMonth() + 1).padStart(2, "0");
-                    const newsHref = `/${year}/${month}/${day}/${featuredPost.slug}`;
+                    const newsHref = `/${year}/${month}/${featuredPost.slug}`;
                     const imageUrl =
                       featuredPost._embedded?.["wp:featuredmedia"]?.[0]
                         ?.source_url ||
@@ -155,8 +154,7 @@ export default async function Home() {
                     // URL amigável
                     const year = d.getFullYear();
                     const month = String(d.getMonth() + 1).padStart(2, "0");
-                    const day = String(d.getDate()).padStart(2, "0");
-                    const newsHref = `/${year}/${month}/${day}/${post.slug}`;
+                    const newsHref = `/${year}/${month}/${post.slug}`;
 
                     return (
                       <Link

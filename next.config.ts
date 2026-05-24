@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
+        protocol: "https",
+        hostname: "imagens.usp.br",
+        pathname: "/**",
+      },
+      {
         // Produção (quando o site for ao ar)
         protocol: "https",
         hostname: "caxias.ma.gov.br",
@@ -27,6 +32,16 @@ const nextConfig: NextConfig = {
     ],
   },
   logging: false,
+  // Tip: Adicionar aqui se voltar a ter problemas com a data antiga
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: "/:year/:month/:day/:slug",
+  //       destination: "/:year/:month/:slug",
+  //       permanent: true,
+  //     },
+  //   ];
+  // },
   experimental: {
     staleTimes: {
       dynamic: 30,

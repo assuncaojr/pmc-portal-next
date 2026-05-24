@@ -28,9 +28,7 @@ export function VideoCard({
     const d = new Date(date);
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    // TODO: remover [day]
-    videoHref = `/${year}/${month}/${day}/${slug}`;
+    videoHref = `/${year}/${month}/${slug}`;
   }
 
   // Fallback image
