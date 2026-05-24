@@ -36,7 +36,7 @@ export default async function Home() {
 
       <main className="grow bg-[#F8FAFC]">
         {/* Modern Hero Grid Section */}
-        <section className="py-16 md:py-24 px-4">
+        <section className="py-12 md:py-20 px-4">
           <div className="container mx-auto max-w-container">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Feature Post (Main) */}
@@ -124,7 +124,7 @@ export default async function Home() {
         <InstagramFeed />
 
         {/* Últimas Notícias & Sidebar */}
-        <section className="py-16 md:py-24 bg-white border-t border-gray-100">
+        <section className="py-12 md:py-20 bg-white border-t border-gray-100">
           <div className="container mx-auto px-4 max-w-container">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
               {/* Últimas Notícias (Left - 8 columns) */}

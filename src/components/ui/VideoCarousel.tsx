@@ -40,7 +40,7 @@ export function VideoCarousel({ posts, title = "Vídeos" }: VideoCarouselProps) 
   if (!posts || posts.length === 0) return null;
 
   return (
-    <section className="py-16 bg-white overflow-hidden border-t border-gray-100">
+    <section className="py-12 bg-white overflow-hidden border-t border-gray-100">
       <div className="container mx-auto px-4 max-w-container">
         {/* Header with Arrows */}
         <div className="flex items-center justify-between mb-10">
