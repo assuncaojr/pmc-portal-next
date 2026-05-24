@@ -5,6 +5,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { VideoCard } from "./VideoCard";
 import { WordPressPost } from "@/lib/wordpress";
 import { motion } from "framer-motion";
+import { extractVideoFromContent, ExtractedVideo } from "@/lib/video";
+import { VideoModal } from "./VideoModal";
 
 interface VideoCarouselProps {
   posts: WordPressPost[];
@@ -14,6 +16,12 @@ interface VideoCarouselProps {
 export function VideoCarousel({ posts, title = "Vídeos" }: VideoCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [activeVideo, setActiveVideo] = useState<{
+    title: string;
+    videoUrl: string;
+    videoType: ExtractedVideo["type"];
+    articleUrl: string;
+  } | null>(null);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
   const checkArrows = () => {
@@ -104,6 +112,16 @@ export function VideoCarousel({ posts, title = "Vídeos" }: VideoCarouselProps) 
                 t.name.toLowerCase() === "horizontal",
             );
 
+            let articleUrl = `/noticias/${post.slug}`;
+            if (post.date) {
+              const d = new Date(post.date);
+              const year = d.getFullYear();
+              const month = String(d.getMonth() + 1).padStart(2, "0");
+              articleUrl = `/${year}/${month}/${post.slug}`;
+            }
+
+            const videoInfo = extractVideoFromContent(post.content.rendered);
+
             return (
               <motion.div
                 key={post.id}
@@ -121,12 +139,34 @@ export function VideoCarousel({ posts, title = "Vídeos" }: VideoCarouselProps) 
                     post._embedded?.["wp:featuredmedia"]?.[0]?.source_url || ""
                   }
                   orientation={isHorizontal ? "horizontal" : "vertical"}
+                  onClick={
+                    videoInfo
+                      ? () =>
+                          setActiveVideo({
+                            title: post.title.rendered,
+                            videoUrl: videoInfo.src,
+                            videoType: videoInfo.type,
+                            articleUrl,
+                          })
+                      : undefined
+                  }
                 />
               </motion.div>
             );
           })}
         </div>
       </div>
+
+      {activeVideo && (
+        <VideoModal
+          isOpen={!!activeVideo}
+          onClose={() => setActiveVideo(null)}
+          title={activeVideo.title}
+          videoUrl={activeVideo.videoUrl}
+          videoType={activeVideo.videoType}
+          articleUrl={activeVideo.articleUrl}
+        />
+      )}
     </section>
   );
 }

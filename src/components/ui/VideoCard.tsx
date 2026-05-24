@@ -13,6 +13,7 @@ interface VideoCardProps {
   duration?: string;
   orientation?: "horizontal" | "vertical";
   date?: string;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 export function VideoCard({
@@ -21,6 +22,7 @@ export function VideoCard({
   image,
   orientation = "vertical",
   date,
+  onClick,
 }: VideoCardProps) {
   // Construção da URL amigável (SEO)
   let videoHref = `/noticias/${slug}`;
@@ -36,6 +38,13 @@ export function VideoCard({
     image ||
     "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1000";
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick(e);
+    }
+  };
+
   return (
     <motion.div
       layout
@@ -47,7 +56,11 @@ export function VideoCard({
         orientation === "horizontal" ? "w-65 hover:w-160" : "w-65",
       )}
     >
-      <Link href={videoHref} className="block w-full h-full relative">
+      <Link
+        href={videoHref}
+        onClick={handleClick}
+        className="block w-full h-full relative"
+      >
         <Image
           src={displayImage}
           alt={title.replace(/<[^>]*>/g, "")}
