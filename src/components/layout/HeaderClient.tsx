@@ -26,7 +26,7 @@ export function HeaderClient({ menuItems }: { menuItems: MenuItem[] }) {
                   alt="Prefeitura de Caxias"
                   width={196}
                   height={70}
-                  className="h-11 md:h-14 w-auto"
+                  className="h-11 md:h-18 w-auto"
                   unoptimized={true}
                   priority
                 />

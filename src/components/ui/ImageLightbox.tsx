@@ -88,7 +88,7 @@ export function ImageLightbox({
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="relative max-w-full max-h-[85vh] flex flex-col items-center"
           >
-            <div className="relative w-full h-[75vh]">
+            <div className="relative w-[90vw] md:w-[80vw] max-w-5xl h-[75vh]">
               <Image
                 src={images[currentIndex].src}
                 alt={images[currentIndex].alt}
