@@ -245,19 +245,50 @@ export async function getInstagramPosts(): Promise<InstagramPost[]> {
   try {
     const response = await fetch(url, {
       cache: "force-cache",
-      next: { revalidate: 3600 },
+      next: { revalidate: 600 }, // Reduzido de 3600 para 600 segundos (10 minutos) para rápida recuperação de falhas
     });
-    if (!response.ok) return [];
+    if (!response.ok) {
+      console.warn(`[Instagram Feed] Fetch failed with status: ${response.status}`);
+      return [];
+    }
     const data = await response.json();
 
+    if (!data || typeof data !== "object") {
+      console.warn("[Instagram Feed] Received invalid data format from API:", data);
+      return [];
+    }
+
+    // 1. Busca prioritária pelo padrão do transient do Zoom Instagram
     for (const key in data) {
       if (key.startsWith("zoom_instagram_is_configured") && data[key]?.data) {
         return data[key].data as InstagramPost[];
       }
     }
+
+    // 2. Fallback robusto: busca qualquer chave relacionada ao Instagram que possua uma array de posts
+    for (const key in data) {
+      if (
+        (key.startsWith("zoom_instagram") || key.includes("instagram")) &&
+        Array.isArray(data[key]?.data) &&
+        data[key].data.length > 0
+      ) {
+        console.log(`[Instagram Feed] Using fallback key: ${key}`);
+        return data[key].data as InstagramPost[];
+      }
+    }
+
+    // 3. Fallback genérico: qualquer chave no objeto que possua dados válidos em array
+    for (const key in data) {
+      if (Array.isArray(data[key]?.data) && data[key].data.length > 0) {
+        console.log(`[Instagram Feed] Using generic array fallback key: ${key}`);
+        return data[key].data as InstagramPost[];
+      }
+    }
+
+    console.warn("[Instagram Feed] No matching Instagram data keys found in payload:", Object.keys(data));
     return [];
   } catch (error) {
-    console.error("Error fetching Instagram:", error);
+    console.error("[Instagram Feed] Error fetching Instagram feed:", error);
     return [];
   }
 }
