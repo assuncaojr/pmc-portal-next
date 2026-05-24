@@ -24,6 +24,16 @@ export function NoticeModal({ notices }: NoticeModalProps) {
     }
   }, [notices]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isOpen && e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
   if (!currentNotice) return null;
 
   const featuredImage = currentNotice._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
@@ -60,7 +70,7 @@ export function NoticeModal({ notices }: NoticeModalProps) {
             <div className="flex flex-col">
               {/* Top Image if exists */}
               {featuredImage && (
-                <div className="aspect-video relative overflow-hidden bg-pmc-primary/10">
+                <div className="relative overflow-hidden bg-pmc-primary/10">
                   <img
                     src={featuredImage}
                     alt={currentNotice.title.rendered}
@@ -69,19 +79,20 @@ export function NoticeModal({ notices }: NoticeModalProps) {
                 </div>
               )}
 
-              {/* Text Area */}
+              {/*
+              TODO: usar o  código abaixo quando houver a necessidade de usar um layout diferente do padrão (texto e imagem)
               <div className="p-8 md:p-12">
                 <div className="flex items-center space-x-2 text-pmc-primary font-bold uppercase tracking-widest text-xs mb-4">
                   <div className="w-2 h-2 bg-pmc-primary rounded-full animate-pulse" />
                   <span>Aviso Importante</span>
                 </div>
-                
-                <h2 
+
+                <h2
                   className="text-2xl md:text-4xl font-black text-pmc-dark mb-6 leading-tight"
                   dangerouslySetInnerHTML={{ __html: currentNotice.title.rendered }}
                 />
-                
-                <div 
+
+                <div
                   className="text-gray-600 space-y-4 mb-8 text-lg"
                   dangerouslySetInnerHTML={{ __html: currentNotice.content.rendered }}
                 />
@@ -98,6 +109,7 @@ export function NoticeModal({ notices }: NoticeModalProps) {
                   </a>
                 )}
               </div>
+              */}
             </div>
           </motion.div>
         </div>
