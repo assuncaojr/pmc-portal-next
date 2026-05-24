@@ -4,6 +4,8 @@ import "./globals.css";
 import { generatePMCSEO } from "@/lib/seo";
 import { NoticeModal } from "@/components/ui/NoticeModal";
 import { getActivePopups } from "@/lib/links";
+import { PodcastProvider } from "@/context/PodcastContext";
+import { PodcastPlayer } from "@/components/layout/PodcastPlayer";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -22,10 +24,13 @@ export default async function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`${plusJakartaSans.variable} font-sans antialiased`}>
-        <div className="min-h-screen flex flex-col">
-          {children}
-        </div>
-        <NoticeModal notices={activePopups} />
+        <PodcastProvider>
+          <div className="min-h-screen flex flex-col">
+            {children}
+          </div>
+          <NoticeModal notices={activePopups} />
+          <PodcastPlayer />
+        </PodcastProvider>
       </body>
     </html>
   );

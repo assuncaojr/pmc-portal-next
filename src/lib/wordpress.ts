@@ -29,6 +29,32 @@ export interface WordPressPost {
   };
 }
 
+export interface WordPressPodcast {
+  id: number;
+  date: string;
+  slug: string;
+  link: string;
+  title: {
+    rendered: string;
+  };
+  content: {
+    rendered: string;
+    protected: boolean;
+  };
+  excerpt: {
+    rendered: string;
+    protected: boolean;
+  };
+  podcast_audio_url: string;
+  podcast_duration: string;
+  podcast_episode_number: number;
+  _embedded?: {
+    "wp:featuredmedia"?: Array<{
+      source_url: string;
+    }>;
+  };
+}
+
 const WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL;
 
 export async function fetchAPI(query: string): Promise<any> {
@@ -301,4 +327,31 @@ export async function getPostsByTagSlug(
   const tag = await getTagBySlug(slug);
   if (!tag) return { posts: [], totalPages: 0, total: 0 };
   return getPostsByTag(tag.id, page, perPage);
+}
+
+export interface WordPressPodcastPage {
+  podcasts: WordPressPodcast[];
+  totalPages: number;
+  total: number;
+}
+
+export async function getPodcasts(
+  page = 1,
+  perPage = 12,
+): Promise<WordPressPodcastPage> {
+  const { data, headers } = await fetchAPIWithHeaders(
+    `podcast?_embed&page=${page}&per_page=${perPage}`,
+  );
+  return {
+    podcasts: data,
+    totalPages: Number(headers.get("X-WP-TotalPages") || 1),
+    total: Number(headers.get("X-WP-Total") || 0),
+  };
+}
+
+export async function getPodcastBySlug(
+  slug: string,
+): Promise<WordPressPodcast | null> {
+  const data = await fetchAPI(`podcast?slug=${slug}&_embed`);
+  return data[0] || null;
 }

@@ -20,6 +20,7 @@ import { getAllPosts, getPostsByTagSlug } from "@/lib/wordpress";
 import Image from "next/image";
 import { PostCard } from "@/components/ui/PostCard";
 import { VideoCarousel } from "@/components/ui/VideoCarousel";
+import { PodcastBanner } from "@/components/ui/PodcastBanner";
 
 export default async function Home() {
   const { posts: allPosts } = await getAllPosts(1, 13);
@@ -85,7 +86,7 @@ export default async function Home() {
                     );
                   })()
                 ) : (
-                  <div className="lg:h-full bg-gray-200 rounded-[32px] animate-pulse" />
+                  <div className="lg:h-full bg-gray-200 rounded-4xl animate-pulse" />
                 )}
               </div>
 
@@ -110,7 +111,7 @@ export default async function Home() {
                     (_, i) => (
                       <div
                         key={`empty-${i}`}
-                        className="aspect-[16/10] bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 text-xs font-medium border border-dashed border-gray-300"
+                        className="aspect-16/10 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 text-xs font-medium border border-dashed border-gray-300"
                       >
                         Espaço reservado
                       </div>
@@ -204,6 +205,13 @@ export default async function Home() {
               {/* Sidebar (Right - 4 columns) */}
               <div className="lg:col-span-4">
                 <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 sticky top-24">
+                  {/* Banner do Podcast Interno */}
+                  <div className="mb-12">
+                    <PodcastBanner />
+                  </div>
+
+                  <div className="h-px bg-gray-100 my-8"></div>
+
                   {/* Acesso Rápido */}
                   <div className="mb-12">
                     <div className="flex items-center space-x-3 mb-8">
