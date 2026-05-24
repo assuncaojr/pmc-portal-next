@@ -3,8 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
-import { shouldUnoptimizeImage } from "@/lib/utils";
 
 interface ImageLightboxProps {
   images: { src: string; alt: string; caption?: React.ReactNode }[];
@@ -86,17 +84,14 @@ export function ImageLightbox({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="relative max-w-full max-h-[85vh] flex flex-col items-center"
+            className="relative max-w-[90vw] md:max-w-[80vw] xl:max-w-5xl max-h-[85vh] flex flex-col items-center"
           >
-            <div className="relative w-[90vw] md:w-[80vw] max-w-5xl h-[75vh]">
-              <Image
-                src={images[currentIndex].src}
-                alt={images[currentIndex].alt}
-                fill
-                unoptimized={shouldUnoptimizeImage(images[currentIndex].src)}
-                className="object-contain rounded-2xl shadow-2xl"
-              />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={images[currentIndex].src}
+              alt={images[currentIndex].alt}
+              className="max-h-[75vh] w-auto h-auto object-contain rounded-2xl shadow-2xl"
+            />
 
             {/* Caption & Counter */}
             <div className="mt-6 text-center">

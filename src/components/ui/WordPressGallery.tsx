@@ -35,7 +35,7 @@ export function WordPressGallery({ images, columns = 3 }: WordPressGalleryProps)
         {images.map((image, index) => (
           <figure
             key={index}
-            className="relative aspect-square overflow-hidden rounded-2xl group cursor-pointer shadow-md hover:shadow-xl transition-all hover:scale-[1.02]"
+            className="relative aspect-square overflow-hidden rounded-2xl group cursor-pointer shadow-md hover:shadow-xl transition-all hover:scale-[1.01]"
             onClick={() => setLightboxIndex(index)}
           >
             <Image
@@ -43,7 +43,7 @@ export function WordPressGallery({ images, columns = 3 }: WordPressGalleryProps)
               alt={image.alt}
               fill
               unoptimized={shouldUnoptimizeImage(image.src)}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.01]"
             />
             <div className="absolute inset-0 bg-pmc-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <div className="p-3 bg-white/40 backdrop-blur-md rounded-full text-white shadow-xl">
