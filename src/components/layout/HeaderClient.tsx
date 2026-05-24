@@ -121,7 +121,7 @@ export function HeaderClient({ menuItems }: { menuItems: MenuItem[] }) {
       </div>
 
       {/* Nav Bar (Blue Gradient) */}
-      <div className="bg-linear-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-lg hidden md:block border-b-4 border-[#dc2626]">
+      <div className="bg-linear-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-lg hidden md:block">
         <div className="container mx-auto px-4 max-w-container">
           <nav className="flex items-center justify-center">
             <ul className="flex items-center">

@@ -2,19 +2,9 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { InstagramFeed } from "@/components/ui/InstagramFeed";
 import Link from "next/link";
-import {
-  ArrowRight,
-  FileCheck,
-  Calculator,
-  Users,
-  Landmark,
-  BookOpen,
-  FileText,
-  Gavel,
-  ShieldCheck,
-  ScrollText,
-  BadgeInfo,
-} from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
+import * as Lucide from "lucide-react";
+import { getActiveLinks, filterLinksBySection } from "@/lib/links";
 import { cn, shouldUnoptimizeImage } from "@/lib/utils";
 import { getAllPosts, getPostsByTagSlug } from "@/lib/wordpress";
 import Image from "next/image";
@@ -25,6 +15,13 @@ import { PodcastBanner } from "@/components/ui/PodcastBanner";
 export default async function Home() {
   const { posts: allPosts } = await getAllPosts(1, 13);
   const { posts: videoPosts } = await getPostsByTagSlug("video", 1, 10);
+
+  // Buscar todos os links ativos do WordPress
+  const activeLinks = await getActiveLinks();
+
+  // Filtrar links por seção
+  const quickAccessLinks = filterLinksBySection(activeLinks, "acesso-rapido");
+  const lawLinks = filterLinksBySection(activeLinks, "leis-e-codigos");
 
   // Pegamos o primeiro post para o destaque e os próximos 4 para o grid lateral
   const featuredPost = allPosts[0];
@@ -222,56 +219,23 @@ export default async function Home() {
                     </div>
 
                     <div className="space-y-1">
-                      <QuickLink
-                        icon={<FileCheck className="w-5 h-5" />}
-                        label="Edital Concurso Público 2025"
-                        href="/editais-concurso-2025"
-                      />
-                      <QuickLink
-                        icon={<Calculator className="w-5 h-5" />}
-                        label="Sistema Tributário Municipal"
-                        href="https://sefaz.caxias.ma.gov.br/"
-                      />
-                      <QuickLink
-                        icon={<ShieldCheck className="w-5 h-5" />}
-                        label="Portal da Transparência"
-                        href="https://transparencia.caxias.ma.gov.br/"
-                      />
-                      <QuickLink
-                        icon={<Landmark className="w-5 h-5" />}
-                        label="Diário Oficial (DOM)"
-                        href="/dom"
-                      />
-                      <QuickLink
-                        icon={<Users className="w-5 h-5" />}
-                        label="Portal do Servidor"
-                        href="/servidores"
-                      />
-                      <QuickLink
-                        icon={<FileText className="w-5 h-5" />}
-                        label="Contracheque Online"
-                        href="/contracheque"
-                      />
-                      <QuickLink
-                        icon={<Gavel className="w-5 h-5" />}
-                        label="Licitações e Contratos"
-                        href="/licitacoes"
-                      />
-                      <QuickLink
-                        icon={<BadgeInfo className="w-5 h-5" />}
-                        label="E-Sic / Ouvidoria"
-                        href="/e-sic"
-                      />
-                      <QuickLink
-                        icon={<ScrollText className="w-5 h-5" />}
-                        label="NFS-e (Nota Fiscal)"
-                        href="https://nfe.caxias.ma.gov.br/"
-                      />
-                      <QuickLink
-                        icon={<Landmark className="w-5 h-5" />}
-                        label="Precatórios do FUNDEF"
-                        href="/fundef"
-                      />
+                      {quickAccessLinks.length > 0 ? (
+                        quickAccessLinks.map((link) => {
+                          const IconComponent = getIconComponent(link.link_icon);
+                          return (
+                            <QuickLink
+                              key={link.id}
+                              icon={<IconComponent className="w-5 h-5" />}
+                              label={link.title.rendered}
+                              href={link.link_url}
+                            />
+                          );
+                        })
+                      ) : (
+                        <p className="text-xs text-gray-400 font-medium py-2">
+                          Nenhum link de acesso rápido configurado.
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -284,13 +248,20 @@ export default async function Home() {
                       <span>Leis e Códigos</span>
                     </h3>
                     <ul className="space-y-4 mb-10">
-                      <LawLink label="Conselho Tutelar" />
-                      <LawLink label="Lei 2.156/2014 - Concursos" highlight />
-                      <LawLink label="Lei 2.113/2013 - Controle de Animais" />
-                      <LawLink label="Código Tributário (download)" />
-                      <LawLink label="Código de Postura (download)" />
-                      <LawLink label="Código de Meio-ambiente (download)" />
-                      <LawLink label="Plano Diretor (download)" />
+                      {lawLinks.length > 0 ? (
+                        lawLinks.map((link) => (
+                          <LawLink
+                            key={link.id}
+                            label={link.title.rendered}
+                            href={link.link_url}
+                            highlight={link.link_highlight === "1"}
+                          />
+                        ))
+                      ) : (
+                        <p className="text-xs text-gray-400 font-medium">
+                          Nenhuma legislação configurada.
+                        </p>
+                      )}
                     </ul>
 
                     <Link
@@ -339,11 +310,19 @@ function QuickLink({
   );
 }
 
-function LawLink({ label, highlight }: { label: string; highlight?: boolean }) {
+function LawLink({
+  label,
+  href,
+  highlight,
+}: {
+  label: string;
+  href: string;
+  highlight?: boolean;
+}) {
   return (
     <li>
       <Link
-        href="#"
+        href={href || "#"}
         className={cn(
           "text-sm font-medium hover:text-pmc-primary transition-colors flex items-center gap-2 group",
           highlight
@@ -358,4 +337,18 @@ function LawLink({ label, highlight }: { label: string; highlight?: boolean }) {
       </Link>
     </li>
   );
+}
+
+function getIconComponent(name?: string) {
+  if (!name) return Lucide.Link;
+
+  // Normalize string to PascalCase (e.g. "file-check" -> "FileCheck")
+  const normalizedName = name
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join("");
+
+  const Icon =
+    (Lucide as any)[normalizedName] || (Lucide as any)[name] || Lucide.Link;
+  return Icon;
 }
