@@ -7,6 +7,7 @@ import { WordPressPost } from "@/lib/wordpress";
 import { motion } from "framer-motion";
 import { extractVideoFromContent, ExtractedVideo } from "@/lib/video";
 import { VideoModal } from "./VideoModal";
+import Link from "next/link";
 
 interface VideoCarouselProps {
   posts: WordPressPost[];
@@ -64,7 +65,13 @@ export function VideoCarousel({ posts, title = "Vídeos" }: VideoCarouselProps) 
             </h2>
           </motion.div>
 
-          <div className="flex gap-3">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/videos"
+              className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-pmc-primary bg-pmc-primary/5 hover:bg-pmc-primary hover:text-white rounded-full transition-all border border-pmc-primary/10 hover:border-pmc-primary shadow-xs hover:shadow-md cursor-pointer mr-1"
+            >
+              Mais vídeos
+            </Link>
             <button
               onClick={() => scroll("left")}
               className={`p-3 rounded-full border border-gray-200 transition-all ${

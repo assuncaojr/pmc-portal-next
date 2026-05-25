@@ -1,3 +1,5 @@
+"use client";
+
 import parse, { domToReact, HTMLReactParserOptions } from "html-react-parser";
 import { cn } from "@/lib/utils";
 import { WordPressGallery } from "@/components/ui/WordPressGallery";
