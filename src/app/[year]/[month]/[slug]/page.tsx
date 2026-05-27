@@ -9,8 +9,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
-import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { ShareButtons } from "@/components/ui/ShareButtons";
 
 interface PostPageProps {
   params: Promise<{
@@ -114,17 +114,10 @@ export default async function PostPage({ params }: PostPageProps) {
           <div className="mt-20 pt-10 border-t border-gray-100 flex flex-col items-center text-center">
             <div className="flex items-center gap-2 text-pmc-primary font-black uppercase tracking-widest text-sm mb-6">
               <Share2 className="w-4 h-4" />
-              <span>Compartilhe esta notícia</span>
+              <span>Compartilhe</span>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button className="bg-[#1877F2] hover:bg-[#1877F2]/90 rounded-full px-8">
-                Facebook
-              </Button>
-              <Button className="bg-[#25D366] hover:bg-[#25D366]/90 rounded-full px-8">
-                WhatsApp
-              </Button>
-            </div>
+            <ShareButtons title={post.title.rendered} />
           </div>
         </Container>
       </main>

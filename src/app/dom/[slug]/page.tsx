@@ -3,12 +3,12 @@ import { Footer } from "@/components/layout/Footer";
 import { getDOMBySlug } from "@/lib/dom";
 import { DOMInfo } from "@/components/dom/DOMInfo";
 import DOMViewerWrapper from "@/components/dom/DOMViewerWrapper";
-import { ChevronLeft, Download, Share2 } from "lucide-react";
+import { ChevronLeft, Download } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { generatePMCSEO } from "@/lib/seo";
 import type { Metadata } from "next";
-import { Button } from "@/components/ui/Button";
+import { ShareIconButton } from "@/components/ui/ShareIconButton";
 
 interface DOMSinglePageProps {
   params: Promise<{ slug: string }>;
@@ -66,20 +66,19 @@ export default async function DOMSinglePage({ params }: DOMSinglePageProps) {
           </div>
 
           <div className="flex items-center gap-3 justify-end border-b border-gray-100 pb-8 mb-10">
-            <Button variant="primary" size="sm" asChild>
-              <a
-                href={dom.file_url}
-                download
-                className="flex items-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                <span>Download desta Edição</span>
-              </a>
-            </Button>
+            <a
+              href={dom.file_url}
+              download
+              className="inline-flex items-center justify-center transition-all active:scale-95 bg-pmc-primary text-white hover:bg-pmc-primary/90 shadow-pmc hover:shadow-pmc-xl px-4 py-2 text-sm rounded-lg font-bold gap-2"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download desta Edição</span>
+            </a>
 
-            <Button variant="ghost" size="icon" className="bg-gray-100">
-              <Share2 className="w-4 h-4" />
-            </Button>
+            <ShareIconButton
+              title={`Diário Oficial de Caxias - Edição ${dom.title.rendered}`}
+              className="bg-gray-100"
+            />
           </div>
 
           {/* PDF Viewer Wrapped in Client Entry */}
