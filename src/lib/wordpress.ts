@@ -106,6 +106,13 @@ export async function getPostBySlug(
   return data[0] || null;
 }
 
+export async function getPageBySlug(
+  slug: string,
+): Promise<WordPressPost | null> {
+  const data = await fetchAPI(`pages?slug=${slug}&_embed`);
+  return data[0] || null;
+}
+
 export interface WordPressPage {
   posts: WordPressPost[];
   totalPages: number;
