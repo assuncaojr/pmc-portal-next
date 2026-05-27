@@ -27,6 +27,16 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* WordPress Spacing Presets */
+  --wp--preset--spacing--10: 0.25rem;
+  --wp--preset--spacing--20: 0.5rem;
+  --wp--preset--spacing--30: 0.75rem;
+  --wp--preset--spacing--40: 1rem;
+  --wp--preset--spacing--50: 1.5rem;
+  --wp--preset--spacing--60: 2rem;
+  --wp--preset--spacing--70: 3rem;
+  --wp--preset--spacing--80: 4rem;
 }
 
 @layer base {
@@ -52,3 +62,459 @@
     display: none;
   }
 }
+
+/* ==========================================================================
+   WordPress Core Gutenberg Block Styles
+   ========================================================================== */
+
+/* Spacing and default typographies within WordPress rendered contents */
+.gutenberg-content p {
+  font-size: 1.125rem; /* text-lg */
+  line-height: 1.75;
+  color: #4b5563; /* text-gray-600 */
+  margin-bottom: 1.5rem;
+}
+.gutenberg-content p:last-child {
+  margin-bottom: 0;
+}
+
+.gutenberg-content h1,
+.gutenberg-content h2,
+.gutenberg-content h3,
+.gutenberg-content h4,
+.gutenberg-content h5,
+.gutenberg-content h6 {
+  color: var(--color-pmc-dark);
+  font-weight: 800;
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.35;
+}
+.gutenberg-content h1 { font-size: 2.25rem; }
+.gutenberg-content h2 { font-size: 1.875rem; }
+.gutenberg-content h3 { font-size: 1.5rem; }
+.gutenberg-content h4 { font-size: 1.25rem; }
+
+/* Columns Block Layout */
+.gutenberg-content .wp-block-columns {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important; /* Prevents columns from wrapping on desktop */
+  gap: 2rem !important;
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+  width: 100% !important;
+}
+.gutenberg-content .wp-block-columns.is-layout-flex {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: 2rem !important;
+}
+.gutenberg-content .wp-block-column {
+  flex-grow: 1 !important;
+  flex-shrink: 1 !important;
+  min-width: 0 !important;
+}
+@media (max-width: 768px) {
+  .gutenberg-content .wp-block-columns,
+  .gutenberg-content .wp-block-columns.is-layout-flex {
+    flex-direction: column !important;
+    flex-wrap: wrap !important;
+    gap: 1.5rem !important;
+  }
+  .gutenberg-content .wp-block-column {
+    flex-basis: 100% !important;
+    width: 100% !important;
+  }
+}
+
+/* Featured Image Block styling inside column */
+.gutenberg-content .wp-block-post-featured-image {
+  margin: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 1rem !important; /* rounded-2xl */
+  overflow: hidden !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.gutenberg-content .wp-block-post-featured-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Media & Text Block Layout (e.g. Humberto de Oliveira Adjunto Profile Card) */
+.gutenberg-content .wp-block-media-text {
+  display: grid;
+  grid-template-columns: 22% 1fr;
+  gap: 2rem;
+  align-items: center;
+  background-color: transparent !important; /* Transparent background as requested */
+  border: none !important;
+  box-shadow: none !important;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  overflow: visible !important;
+}
+.gutenberg-content .wp-block-media-text__media {
+  margin: 0 !important;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem !important; /* Retain rounded corners for profile photo */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+}
+.gutenberg-content .wp-block-media-text__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.75rem !important;
+}
+.gutenberg-content .wp-block-media-text__content {
+  padding: 0 !important; /* Clear inner margins so it aligns beautifully on transparent card */
+}
+@media (max-width: 768px) {
+  .gutenberg-content .wp-block-media-text.is-stacked-on-mobile {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem;
+  }
+}
+
+/* Group Block Container */
+.gutenberg-content .wp-block-group {
+  margin-bottom: 2.5rem;
+}
+.gutenberg-content .columns-overflow {
+  overflow: visible !important;
+}
+
+/* Cover Block Container */
+.gutenberg-content .wp-block-cover {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  width: 100%;
+}
+.gutenberg-content .wp-block-cover__image-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+.gutenberg-content .wp-block-cover__background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+.gutenberg-content .wp-block-cover__inner-container {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  padding: 2rem;
+}
+
+/* Separation Rules */
+.gutenberg-content hr.wp-block-separator {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 3rem 0;
+  opacity: 1;
+}
+
+/* Query Post Cards loop (flat row format matching the home page list style) */
+.gutenberg-content .wp-block-post-template {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.gutenberg-content .wp-block-post-template.is-layout-grid {
+  grid-template-columns: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.gutenberg-content .wp-block-post {
+  background-color: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: none !important;
+  padding: 2rem 0 !important;
+  margin: 0 !important;
+  transition: all 0.3s ease;
+}
+.gutenberg-content .wp-block-post:last-child {
+  border-bottom: none !important;
+}
+.gutenberg-content .wp-block-post:hover {
+  transform: none !important;
+  background-color: rgba(248, 250, 252, 0.5) !important;
+}
+
+/* Re-styling the image container (first column) to match home page .w-64 .h-44 */
+.gutenberg-content .wp-block-post .wp-block-columns {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 1.5rem !important;
+  margin: 0 !important;
+}
+.gutenberg-content .wp-block-post .wp-block-column:first-child {
+  flex: 0 0 256px !important; /* md:w-64 (256px) */
+  width: 256px !important;
+  height: 176px !important; /* h-44 (176px) */
+  border-radius: 1rem !important; /* rounded-2xl */
+  overflow: hidden !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important; /* shadow-md */
+  margin: 0 !important;
+  position: relative !important;
+}
+.gutenberg-content .wp-block-post .wp-block-column:first-child .wp-block-cover {
+  border-radius: 1rem !important;
+  height: 100% !important;
+  min-height: 100% !important;
+}
+.gutenberg-content .wp-block-post .wp-block-column:first-child img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transition: transform 0.5s ease !important;
+}
+.gutenberg-content .wp-block-post:hover .wp-block-column:first-child img {
+  transform: scale(1.05) !important;
+}
+
+/* Re-ordering Column 2 to show Title first and Date second, matching home page */
+.gutenberg-content .wp-block-post .wp-block-column:last-child {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  flex: 1 1 0% !important;
+  margin: 0 !important;
+}
+.gutenberg-content .wp-block-post-title {
+  order: 1 !important; /* Title goes first */
+  font-size: 1.25rem !important; /* text-xl */
+  font-weight: 900 !important; /* font-black */
+  line-height: 1.25 !important;
+  color: var(--color-pmc-dark) !important;
+  margin: 0 0 0.75rem 0 !important;
+}
+@media (min-width: 768px) {
+  .gutenberg-content .wp-block-post-title {
+    font-size: 1.5rem !important; /* text-2xl */
+  }
+}
+.gutenberg-content .wp-block-post-title a {
+  text-decoration: none !important;
+  color: inherit !important;
+  transition: color 0.2s ease;
+}
+.gutenberg-content .wp-block-post-title a:hover {
+  color: var(--color-pmc-primary) !important;
+}
+.gutenberg-content .wp-block-post-date {
+  order: 2 !important; /* Date goes below title */
+  font-size: 0.875rem !important; /* text-sm */
+  color: #6b7280 !important; /* text-gray-500 */
+  font-weight: 500 !important; /* font-medium */
+  margin: 0 !important;
+  line-height: 1 !important;
+}
+
+/* Responsive adjustments for the query post item */
+@media (max-width: 768px) {
+  .gutenberg-content .wp-block-post .wp-block-columns {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1.25rem !important;
+  }
+  .gutenberg-content .wp-block-post .wp-block-column:first-child {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    height: 200px !important;
+  }
+}
+
+/* Pagination Rules */
+.gutenberg-content .wp-block-query-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 3rem 0;
+}
+.gutenberg-content .wp-block-query-pagination-numbers {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+.gutenberg-content .wp-block-query-pagination .page-numbers {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #4b5563;
+  background-color: #f3f4f6;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.gutenberg-content .wp-block-query-pagination .page-numbers:hover {
+  background-color: #e5e7eb;
+  color: var(--color-pmc-primary);
+}
+.gutenberg-content .wp-block-query-pagination .page-numbers.current {
+  background-color: var(--color-pmc-primary);
+  color: #ffffff;
+}
+.gutenberg-content .wp-block-query-pagination .page-numbers.dots {
+  background-color: transparent;
+  color: #9ca3af;
+}
+.gutenberg-content .wp-block-query-pagination-next,
+.gutenberg-content .wp-block-query-pagination-previous {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 1rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #4b5563;
+  background-color: #f3f4f6;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.gutenberg-content .wp-block-query-pagination-next:hover,
+.gutenberg-content .wp-block-query-pagination-previous:hover {
+  background-color: #e5e7eb;
+  color: var(--color-pmc-primary);
+}
+
+/* Custom Gutenberg Color overrides & Alignments */
+.gutenberg-content .has-text-align-center {
+  text-align: center !important;
+}
+.gutenberg-content .has-text-align-right {
+  text-align: right !important;
+}
+.gutenberg-content .has-text-align-left {
+  text-align: left !important;
+}
+
+.gutenberg-content .has-white-color {
+  color: #ffffff !important;
+}
+.gutenberg-content .has-black-color {
+  color: #000000 !important;
+}
+.gutenberg-content .has-cyan-bluish-gray-background-color {
+  background-color: #abb8c3 !important;
+}
+
+/* Premium Secretary Card Design Overrides */
+.gutenberg-content .section-main-secretary .wp-block-group.has-background {
+  padding: 2.5rem !important; /* Rich interior spacing */
+  background-color: var(--color-pmc-primary) !important; /* Force Brand Primary Blue background! */
+  box-shadow: 0 20px 25px -5px rgba(0, 90, 255, 0.25), 0 8px 10px -6px rgba(0, 90, 255, 0.2) !important;
+  border-radius: 1.5rem !important;
+  border: none !important;
+}
+.gutenberg-content .section-main-secretary .wp-block-columns {
+  align-items: stretch !important; /* Equal height columns */
+  gap: 2.5rem !important;
+}
+.gutenberg-content .section-main-secretary .wp-block-column:first-child {
+  flex: 0 0 32% !important; /* Fixed proportion for secretary photo */
+  width: 32% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important; /* Align content to top */
+}
+/* Ensure the intermediate group aligns the photo to top */
+.gutenberg-content .section-main-secretary .wp-block-column:first-child .wp-block-group {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.gutenberg-content .section-main-secretary .wp-block-column:first-child .wp-block-post-featured-image {
+  flex-grow: 0 !important; /* Do not stretch to full height of columns */
+  height: 280px !important; /* Reduced photo card height by ~40% (was ~450px, now 280px) */
+  width: 280px !important; /* Modern premium square framing */
+  max-width: 100% !important;
+  background-color: #ffffff !important;
+  border-radius: 1.25rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+}
+.gutenberg-content .section-main-secretary .wp-block-column:first-child .wp-block-post-featured-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: top center !important; /* Perfect cropping focused on head/shoulders */
+  border-radius: 1.25rem !important;
+}
+.gutenberg-content .section-main-secretary .wp-block-column:last-child {
+  flex: 1 1 0% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+.gutenberg-content .section-main-secretary .wp-block-column:last-child .wp-block-group {
+  padding: 0 !important; /* Normalize/strip inner margins & paddings */
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  height: 100% !important;
+}
+
+@media (max-width: 768px) {
+  .gutenberg-content .section-main-secretary .wp-block-group.has-background {
+    padding: 2rem 1.5rem !important;
+  }
+  .gutenberg-content .section-main-secretary .wp-block-columns {
+    gap: 1.5rem !important;
+  }
+  .gutenberg-content .section-main-secretary .wp-block-column:first-child {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+  }
+  .gutenberg-content .section-main-secretary .wp-block-column:first-child .wp-block-post-featured-image {
+    min-height: unset !important;
+    height: 240px !important;
+    width: 240px !important;
+    margin: 0 auto !important; /* Centered square photo on mobile */
+  }
+}
+

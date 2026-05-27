@@ -108,8 +108,10 @@ export async function getPostBySlug(
 
 export async function getPageBySlug(
   slug: string,
+  queryString = "",
 ): Promise<WordPressPost | null> {
-  const data = await fetchAPI(`pages?slug=${slug}&_embed`);
+  const endpoint = `pages?slug=${slug}&_embed${queryString ? "&" + queryString.replace(/^\?/, "") : ""}`;
+  const data = await fetchAPI(endpoint);
   return data[0] || null;
 }
 

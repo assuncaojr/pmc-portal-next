@@ -17,6 +17,11 @@ export function BlockRenderer({ content }: BlockRendererProps) {
 
         // Handle Headings
         if (/^h[1-6]$/.test(domNode.name)) {
+          // If it is a Gutenberg custom styled heading, let html-react-parser handle it natively!
+          if (classes.includes("wp-block-") || classes.includes("has-")) {
+            return undefined;
+          }
+
           const Tag = domNode.name as keyof JSX.IntrinsicElements;
           const levelClasses: Record<string, string> = {
             h1: "text-4xl md:text-5xl font-bold mb-6 mt-10 text-pmc-dark",
@@ -34,6 +39,11 @@ export function BlockRenderer({ content }: BlockRendererProps) {
 
         // Handle Paragraphs
         if (domNode.name === "p") {
+          // If it is a Gutenberg paragraph with custom styling, let html-react-parser handle it natively!
+          if (classes.includes("wp-block-") || classes.includes("has-") || domNode.attribs?.style) {
+            return undefined;
+          }
+
           return (
             <p className="text-lg leading-relaxed text-gray-700 mb-6 last:mb-0">
               {domToReact(domNode.children, options)}
@@ -45,6 +55,11 @@ export function BlockRenderer({ content }: BlockRendererProps) {
         const listClass =
           "list-inside space-y-2 mb-6 text-gray-700 marker:text-pmc-primary";
         if (domNode.name === "ul" && !classes.includes("blocks-gallery-grid")) {
+          // If it's a WordPress core list (like a post template, list card, pagination), render natively
+          if (classes.includes("wp-block-") || classes.includes("has-")) {
+            return undefined;
+          }
+
           return (
             <ul className={cn("list-disc", listClass)}>
               {domToReact(domNode.children, options)}
@@ -190,6 +205,36 @@ export function BlockRenderer({ content }: BlockRendererProps) {
         // Handle Images from WordPress (outside figure or not lightbox)
         if (domNode.name === "img") {
           const { src, alt } = domNode.attribs || {};
+
+          // Check if this image has Gutenberg block/attachment classes, or if it is inside a cover/featured image block
+          const hasGutenbergClasses =
+            classes.includes("wp-image-") ||
+            classes.includes("wp-post-image") ||
+            classes.includes("wp-block-cover__image-background") ||
+            classes.includes("attachment-") ||
+            classes.includes("size-");
+
+          // Walk up parent tree to check if nested in a Gutenberg block that handles images natively
+          let isInsideGutenbergLayout = false;
+          let parentNode = domNode.parent;
+          while (parentNode) {
+            const parentClasses = parentNode.attribs?.class || "";
+            if (
+              parentClasses.includes("wp-block-post-featured-image") ||
+              parentClasses.includes("wp-block-cover") ||
+              parentClasses.includes("wp-block-media-text") ||
+              parentClasses.includes("wp-block-image")
+            ) {
+              isInsideGutenbergLayout = true;
+              break;
+            }
+            parentNode = parentNode.parent;
+          }
+
+          if (hasGutenbergClasses || isInsideGutenbergLayout) {
+            return undefined; // Let html-react-parser render natively with original Gutenberg classes and styles
+          }
+
           return (
             <span className="block my-10 overflow-hidden rounded-2xl shadow-xl transition-all hover:scale-[1.01]">
               {!src && <></>}
@@ -207,6 +252,69 @@ export function BlockRenderer({ content }: BlockRendererProps) {
               )}
             </span>
           );
+        }
+
+        // Handle Links (Anchor tags) to clean up WordPress pagination links
+        if (domNode.name === "a") {
+          const href = domNode.attribs?.href || "";
+
+          // Rewrite WordPress REST API pagination links to use clean Next.js dynamic routing URLs
+          if (href.includes("/wp-json/") || href.includes("wp-json/wp/v2/")) {
+            try {
+              const urlObj = new URL(href, "http://localhost");
+              const params = new URLSearchParams(urlObj.search);
+              const slugVal = params.get("slug");
+
+              params.delete("slug");
+              params.delete("_embed");
+              params.delete("context");
+
+              const newQuery = params.toString();
+              if (slugVal) {
+                const newHref = `/${slugVal}${newQuery ? "?" + newQuery : ""}`;
+                console.log(`[BlockRenderer] Rewrote API pagination URL from "${href}" to "${newHref}"`);
+
+                return (
+                  <a
+                    {...domNode.attribs}
+                    href={newHref}
+                  >
+                    {domToReact(domNode.children, options)}
+                  </a>
+                );
+              }
+            } catch (err) {
+              console.error("[BlockRenderer] Error rewriting API pagination URL:", err);
+            }
+          }
+
+          // Rewrite relative page-numbers pagination links to clean up redundant "slug=" query params
+          if (href.startsWith("?") && href.includes("slug=")) {
+            try {
+              const params = new URLSearchParams(href);
+              const slugVal = params.get("slug");
+
+              params.delete("slug");
+              params.delete("_embed"); // Clean up _embed parameter from relative pagination links
+
+              const newQuery = params.toString();
+              if (slugVal) {
+                const newHref = `/${slugVal}${newQuery ? "?" + newQuery : ""}`;
+                console.log(`[BlockRenderer] Rewrote relative pagination URL from "${href}" to "${newHref}"`);
+
+                return (
+                  <a
+                    {...domNode.attribs}
+                    href={newHref}
+                  >
+                    {domToReact(domNode.children, options)}
+                  </a>
+                );
+              }
+            } catch (err) {
+              console.error("[BlockRenderer] Error cleaning relative page numbers:", err);
+            }
+          }
         }
       }
     },

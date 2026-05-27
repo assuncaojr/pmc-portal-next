@@ -16,6 +16,9 @@ interface CatchAllProps {
   params: Promise<{
     slug: string[];
   }>;
+  searchParams: Promise<{
+    [key: string]: string | string[] | undefined;
+  }>;
 }
 
 export async function generateMetadata({
@@ -54,8 +57,9 @@ export async function generateMetadata({
   return generatePMCSEO({ title: "Não Encontrado" });
 }
 
-export default async function CatchAllPage({ params }: CatchAllProps) {
+export default async function CatchAllPage({ params, searchParams }: CatchAllProps) {
   const { slug } = await params;
+  const sParams = await searchParams;
 
   if (!slug || slug.length === 0) {
     notFound();
@@ -154,7 +158,15 @@ export default async function CatchAllPage({ params }: CatchAllProps) {
   // 2. Render Page if length is 1 (slug)
   if (slug.length === 1) {
     const pageSlug = slug[0];
-    const page = await getPageBySlug(decodeURIComponent(pageSlug));
+    
+    // Build query string from searchParams to support WordPress inner query loop pagination
+    const queryString = sParams && Object.keys(sParams).length > 0
+      ? "?" + Object.entries(sParams)
+          .map(([key, val]) => `${key}=${encodeURIComponent(String(val))}`)
+          .join("&")
+      : "";
+
+    const page = await getPageBySlug(decodeURIComponent(pageSlug), queryString);
     if (!page) notFound();
 
     return (
